@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth;
 
-import com.hexdragon.enchrebirth.reg.Reg;
+import com.hexdragon.enchrebirth.reg.Registry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -11,6 +11,6 @@ public class EnchRebirth {
 
     public EnchRebirth() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        Reg.CONTAINERS.register(modEventBus);
+        Registry.CONTAINERS.register(modEventBus);
     }
 }

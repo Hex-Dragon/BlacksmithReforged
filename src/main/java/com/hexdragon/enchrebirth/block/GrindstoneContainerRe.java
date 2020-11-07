@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
-import com.hexdragon.enchrebirth.reg.Reg;
+import com.hexdragon.enchrebirth.reg.Registry;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,7 +44,7 @@ public class GrindstoneContainerRe extends Container {
     }
 
     public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
-        super(Reg.containerGrindstone.get(), windowIdIn);
+        super(Registry.containerGrindstone.get(), windowIdIn);
         this.worldPosCallable = worldPosCallableIn;
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
             /**
