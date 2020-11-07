@@ -8,15 +8,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-// 用于测试的 Mixin 函数
 @Mixin(RepairItemRecipe.class)
-public abstract class MixinTest extends SpecialRecipe {
-    public MixinTest(ResourceLocation idIn) {
+public abstract class RepairItemRecipeMixin extends SpecialRecipe {
+    public RepairItemRecipeMixin(ResourceLocation idIn) {
         super(idIn);
     }
 
+    // 将使用普通合成来合并两个工具时的 5% 耐久度奖励取消
     @Redirect(method = "getCraftingResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;getMaxDamage()I", ordinal = 2))
-    private int getNewMaxDamage(ItemStack item) {
+    private int getMaxDamageMixin(ItemStack item) {
         return 0;
     }
 

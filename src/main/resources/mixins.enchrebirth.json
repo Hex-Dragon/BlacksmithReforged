@@ -3,6 +3,8 @@
   "package": "com.hexdragon.enchrebirth.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinTest"
+    "RepairItemRecipeMixin",
+    "ContainerTypeMixin",
+    "GrindstoneBlockMixin"
   ]
 }

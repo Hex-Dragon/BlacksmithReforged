@@ -1,6 +1,12 @@
-package com.hexdragon.enchrebirth;
+package com.hexdragon.enchrebirth.reg;
+
+import com.hexdragon.enchrebirth.block.GrindstoneContainerRe;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.util.registry.Registry;
 
 public class Reg {
+
+    public static final ContainerType<GrindstoneContainerRe> containerGrindstone = Registry.register(Registry.MENU, "grindstone", new ContainerType<>(GrindstoneContainerRe::new));
 
     // 物品
     // public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EnchRebirth.MODID);
