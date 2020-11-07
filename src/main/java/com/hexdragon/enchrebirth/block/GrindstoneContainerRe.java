@@ -10,7 +10,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.*;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.RepairContainer;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -22,10 +24,7 @@ import java.util.stream.Collectors;
 
 public class GrindstoneContainerRe extends Container {
 
-
-    /**
-     * The inventory slot that stores the output of the crafting recipe.
-     */
+    // 输入与输出物品槽
     private final IInventory outputInventory = new CraftResultInventory();
     private final IInventory inputInventory = new Inventory(2) {
         /**
@@ -37,15 +36,9 @@ public class GrindstoneContainerRe extends Container {
             GrindstoneContainerRe.this.onCraftMatrixChanged(this);
         }
     };
-    private final IWorldPosCallable worldPosCallable;
 
-    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn) {
-        this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
-    }
-
-    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
-        super(Registry.containerGrindstone.get(), windowIdIn);
-        this.worldPosCallable = worldPosCallableIn;
+    // 构造页面槽位
+    private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
             /**
              * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
@@ -122,29 +115,19 @@ public class GrindstoneContainerRe extends Container {
             }
         });
 
+        // 增加物品栏与快捷栏槽位
+        int yPositionStart = 84;
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 8 + j * 18, yPositionStart + i * 18));
             }
         }
-
         for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 142));
+            this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 58 + yPositionStart));
         }
-
     }
 
-    /**
-     * Callback for when the crafting matrix is changed.
-     */
-    public void onCraftMatrixChanged(IInventory inventoryIn) {
-        super.onCraftMatrixChanged(inventoryIn);
-        if (inventoryIn == this.inputInventory) {
-            this.updateRecipeOutput();
-        }
-
-    }
-
+    // 当输入物品改变时更新输出
     private void updateRecipeOutput() {
         ItemStack itemstack = this.inputInventory.getStackInSlot(0);
         ItemStack itemstack1 = this.inputInventory.getStackInSlot(1);
@@ -192,12 +175,13 @@ public class GrindstoneContainerRe extends Container {
                 itemstack2 = flag3 ? itemstack : itemstack1;
             }
 
-            this.outputInventory.setInventorySlotContents(0, this.removeEnchantments(itemstack2, i, j));
+            this.outputInventory.setInventorySlotContents(0, this.prepareNewItem(itemstack2, i, j));
         }
 
         this.detectAndSendChanges();
     }
 
+    // 将物品 B 的附魔拷贝到 A，并作为 C 返回
     private ItemStack copyEnchantments(ItemStack copyTo, ItemStack copyFrom) {
         ItemStack itemstack = copyTo.copy();
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(copyFrom);
@@ -212,10 +196,8 @@ public class GrindstoneContainerRe extends Container {
         return itemstack;
     }
 
-    /**
-     * Removes all enchantments from the ItemStack. Note that the curses are not removed.
-     */
-    private ItemStack removeEnchantments(ItemStack stack, int damage, int count) {
+    // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复损耗等级等
+    private ItemStack prepareNewItem(ItemStack stack, int damage, int count) {
         ItemStack itemstack = stack.copy();
         itemstack.removeChildTag("Enchantments");
         itemstack.removeChildTag("StoredEnchantments");
@@ -243,25 +225,13 @@ public class GrindstoneContainerRe extends Container {
         return itemstack;
     }
 
-    /**
-     * Called when the container is closed.
-     */
+    // 接口: 当页面关闭时触发，需要尝试返还物品
     public void onContainerClosed(PlayerEntity playerIn) {
         super.onContainerClosed(playerIn);
         this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_, this.inputInventory));
     }
 
-    /**
-     * Determines whether supplied player can use this container
-     */
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.GRINDSTONE);
-    }
-
-    /**
-     * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
-     * inventory and the other inventory(s).
-     */
+    // 接口: 当玩家使用 Shift+点击 点击某个物品以快速转移时触发，需要尝试转移物品
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
@@ -306,6 +276,41 @@ public class GrindstoneContainerRe extends Container {
         }
 
         return itemstack;
+    }
+
+
+
+
+    /*
+     * --------------------------------------------------------------
+     *  以下方法直接使用原本的代码，不需要也未曾进行过修改
+     * --------------------------------------------------------------
+     */
+
+    // 构造函数
+    private final IWorldPosCallable worldPosCallable;
+
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn) {
+        this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
+    }
+
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
+        super(Registry.containerGrindstone.get(), windowIdIn);
+        this.worldPosCallable = worldPosCallableIn;
+        Constuct(windowIdIn, playerInventoryIn, worldPosCallableIn);
+    }
+
+    // 接口: 决定玩家是否可以使用该方块
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.GRINDSTONE);
+    }
+
+    // 接口: 当输入物品改变时触发更新
+    public void onCraftMatrixChanged(IInventory inventoryIn) {
+        super.onCraftMatrixChanged(inventoryIn);
+        if (inventoryIn == this.inputInventory) {
+            this.updateRecipeOutput();
+        }
     }
 
 }
