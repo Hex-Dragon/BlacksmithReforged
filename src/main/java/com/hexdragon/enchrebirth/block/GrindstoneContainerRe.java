@@ -4,7 +4,6 @@ import com.hexdragon.enchrebirth.reg.Registry;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftResultInventory;
@@ -13,11 +12,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.world.World;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,93 +22,32 @@ import java.util.stream.Collectors;
 public class GrindstoneContainerRe extends Container {
 
     // 输入与输出物品槽
-    private final IInventory outputInventory = new CraftResultInventory();
-    private final IInventory inputInventory = new Inventory(2) {
-        /**
-         * For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think
-         * it hasn't changed and skip it.
-         */
+    private final IInventory inputInventory = new Inventory(1) {
         public void markDirty() {
             super.markDirty();
             GrindstoneContainerRe.this.onCraftMatrixChanged(this);
         }
     };
+    private final IInventory outputInventory = new CraftResultInventory();
 
     // 构造页面槽位
     private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
-            /**
-             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
-             */
+            // 检查物品是否能作为输入
             public boolean isItemValid(ItemStack stack) {
                 return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.isEnchanted();
             }
         });
-        this.addSlot(new Slot(this.inputInventory, 1, 49, 40) {
-            /**
-             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
-             */
-            public boolean isItemValid(ItemStack stack) {
-                return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.isEnchanted();
-            }
-        });
-        this.addSlot(new Slot(this.outputInventory, 2, 129, 34) {
-            /**
-             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
-             */
+        this.addSlot(new Slot(this.outputInventory, 1, 129, 34) {
+            // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
 
+            // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
-                worldPosCallableIn.consume((p_216944_1_, p_216944_2_) -> {
-                    int l = this.getEnchantmentXpFromInputs(p_216944_1_);
-
-                    while (l > 0) {
-                        int i1 = ExperienceOrbEntity.getXPSplit(l);
-                        l -= i1;
-                        p_216944_1_.addEntity(new ExperienceOrbEntity(p_216944_1_, p_216944_2_.getX(), (double) p_216944_2_.getY() + 0.5D, (double) p_216944_2_.getZ() + 0.5D, i1));
-                    }
-
-                    p_216944_1_.playEvent(1042, p_216944_2_, 0);
-                });
                 GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(1, ItemStack.EMPTY);
                 return stack;
-            }
-
-            /**
-             * Returns the total amount of XP stored in all of the input slots of this container. The return value is
-             * randomized, so that it returns between 50% and 100% of the total XP.
-             */
-            private int getEnchantmentXpFromInputs(World worldIn) {
-                int l = 0;
-                l = l + this.getEnchantmentXp(GrindstoneContainerRe.this.inputInventory.getStackInSlot(0));
-                l = l + this.getEnchantmentXp(GrindstoneContainerRe.this.inputInventory.getStackInSlot(1));
-                if (l > 0) {
-                    int i1 = (int) Math.ceil((double) l / 2.0D);
-                    return i1 + worldIn.rand.nextInt(i1);
-                } else {
-                    return 0;
-                }
-            }
-
-            /**
-             * Returns the total amount of XP stored in the enchantments of this stack.
-             */
-            private int getEnchantmentXp(ItemStack stack) {
-                int l = 0;
-                Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack);
-
-                for (Map.Entry<Enchantment, Integer> entry : map.entrySet()) {
-                    Enchantment enchantment = entry.getKey();
-                    Integer integer = entry.getValue();
-                    if (!enchantment.isCurse()) {
-                        l += enchantment.getMinEnchantability(integer);
-                    }
-                }
-
-                return l;
             }
         });
 
@@ -130,70 +66,18 @@ public class GrindstoneContainerRe extends Container {
     // 当输入物品改变时更新输出
     private void updateRecipeOutput() {
         ItemStack itemstack = this.inputInventory.getStackInSlot(0);
-        ItemStack itemstack1 = this.inputInventory.getStackInSlot(1);
-        boolean flag = !itemstack.isEmpty() || !itemstack1.isEmpty();
-        boolean flag1 = !itemstack.isEmpty() && !itemstack1.isEmpty();
-        if (!flag) {
+        if (itemstack.isEmpty()) {
             this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
         } else {
-            boolean flag2 = !itemstack.isEmpty() && itemstack.getItem() != Items.ENCHANTED_BOOK && !itemstack.isEnchanted() || !itemstack1.isEmpty() && itemstack1.getItem() != Items.ENCHANTED_BOOK && !itemstack1.isEnchanted();
-            if (itemstack.getCount() > 1 || itemstack1.getCount() > 1 || !flag1 && flag2) {
+            boolean flag2 = itemstack.getItem() != Items.ENCHANTED_BOOK && !itemstack.isEnchanted();
+            if (itemstack.getCount() > 1 || flag2) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 this.detectAndSendChanges();
                 return;
             }
-
-            int j = 1;
-            int i;
-            ItemStack itemstack2;
-            if (flag1) {
-                if (itemstack.getItem() != itemstack1.getItem()) {
-                    this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                    this.detectAndSendChanges();
-                    return;
-                }
-
-                Item item = itemstack.getItem();
-                int k = itemstack.getMaxDamage() - itemstack.getDamage();
-                int l = itemstack.getMaxDamage() - itemstack1.getDamage();
-                int i1 = k + l + itemstack.getMaxDamage() * 5 / 100;
-                i = Math.max(itemstack.getMaxDamage() - i1, 0);
-                itemstack2 = this.copyEnchantments(itemstack, itemstack1);
-                if (!itemstack2.isRepairable()) i = itemstack.getDamage();
-                if (!itemstack2.isDamageable() || !itemstack2.isRepairable()) {
-                    if (!ItemStack.areItemStacksEqual(itemstack, itemstack1)) {
-                        this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                        this.detectAndSendChanges();
-                        return;
-                    }
-
-                    j = 2;
-                }
-            } else {
-                boolean flag3 = !itemstack.isEmpty();
-                i = flag3 ? itemstack.getDamage() : itemstack1.getDamage();
-                itemstack2 = flag3 ? itemstack : itemstack1;
-            }
-
-            this.outputInventory.setInventorySlotContents(0, this.prepareNewItem(itemstack2, i, j));
+            this.outputInventory.setInventorySlotContents(0, this.prepareNewItem(itemstack, itemstack.getDamage(), itemstack.getCount()));
         }
-
         this.detectAndSendChanges();
-    }
-
-    // 将物品 B 的附魔拷贝到 A，并作为 C 返回
-    private ItemStack copyEnchantments(ItemStack copyTo, ItemStack copyFrom) {
-        ItemStack itemstack = copyTo.copy();
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(copyFrom);
-
-        for (Map.Entry<Enchantment, Integer> entry : map.entrySet()) {
-            Enchantment enchantment = entry.getKey();
-            if (!enchantment.isCurse() || EnchantmentHelper.getEnchantmentLevel(enchantment, itemstack) == 0) {
-                itemstack.addEnchantment(enchantment, entry.getValue());
-            }
-        }
-
-        return itemstack;
     }
 
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复损耗等级等
@@ -225,12 +109,6 @@ public class GrindstoneContainerRe extends Container {
         return itemstack;
     }
 
-    // 接口: 当页面关闭时触发，需要尝试返还物品
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
-        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_, this.inputInventory));
-    }
-
     // 接口: 当玩家使用 Shift+点击 点击某个物品以快速转移时触发，需要尝试转移物品
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -239,7 +117,6 @@ public class GrindstoneContainerRe extends Container {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             ItemStack itemstack2 = this.inputInventory.getStackInSlot(0);
-            ItemStack itemstack3 = this.inputInventory.getStackInSlot(1);
             if (index == 2) {
                 if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
                     return ItemStack.EMPTY;
@@ -247,15 +124,7 @@ public class GrindstoneContainerRe extends Container {
 
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (index != 0 && index != 1) {
-                if (!itemstack2.isEmpty() && !itemstack3.isEmpty()) {
-                    if (index < 30) {
-                        if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                    } else if (index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
-                        return ItemStack.EMPTY;
-                    }
-                } else if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
+                if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
@@ -311,6 +180,12 @@ public class GrindstoneContainerRe extends Container {
         if (inventoryIn == this.inputInventory) {
             this.updateRecipeOutput();
         }
+    }
+
+    // 接口: 当页面关闭时触发，尝试返还物品
+    public void onContainerClosed(PlayerEntity playerIn) {
+        super.onContainerClosed(playerIn);
+        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_, this.inputInventory));
     }
 
 }
