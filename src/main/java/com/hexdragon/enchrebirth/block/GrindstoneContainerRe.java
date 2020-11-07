@@ -39,12 +39,12 @@ public class GrindstoneContainerRe extends Container {
     };
     private final IWorldPosCallable worldPosCallable;
 
-    public GrindstoneContainerRe(int p_i50080_1_, PlayerInventory playerInventoryIn) {
-        this(p_i50080_1_, playerInventoryIn, IWorldPosCallable.DUMMY);
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn) {
+        this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
     }
 
-    public GrindstoneContainerRe(int windowIdIn, PlayerInventory p_i50081_2_, final IWorldPosCallable worldPosCallableIn) {
-        super(Reg.containerGrindstone, windowIdIn);
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
+        super(Reg.containerGrindstone.get(), windowIdIn);
         this.worldPosCallable = worldPosCallableIn;
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
             /**
@@ -124,12 +124,12 @@ public class GrindstoneContainerRe extends Container {
 
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(p_i50081_2_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+                this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
             }
         }
 
         for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(p_i50081_2_, k, 8 + k * 18, 152)); // Modified
+            this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 152)); // Modified
         }
 
     }

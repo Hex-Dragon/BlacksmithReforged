@@ -1,12 +1,19 @@
 package com.hexdragon.enchrebirth.reg;
 
+import com.hexdragon.enchrebirth.EnchRebirth;
 import com.hexdragon.enchrebirth.block.GrindstoneContainerRe;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class Reg {
 
-    public static final ContainerType<GrindstoneContainerRe> containerGrindstone = Registry.register(Registry.MENU, "grindstone", new ContainerType<>(GrindstoneContainerRe::new));
+    public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, EnchRebirth.MODID);
+    public static final RegistryObject<ContainerType<GrindstoneContainerRe>> containerGrindstone = CONTAINERS.register("grindstone", () -> IForgeContainerType.create((int windowId, PlayerInventory inv, PacketBuffer data) -> new GrindstoneContainerRe(windowId, inv)));
 
     // 物品
     // public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, EnchRebirth.MODID);
