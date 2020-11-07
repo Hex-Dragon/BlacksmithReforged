@@ -11,7 +11,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.IWorldPosCallable;
@@ -33,9 +32,10 @@ public class GrindstoneContainerRe extends Container {
     // 构造页面槽位
     private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
-            // 检查物品是否能作为输入
+            // 检查物品是否能输入：没有没拿走的输出，且接受输入
             public boolean isItemValid(ItemStack stack) {
-                return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.isEnchanted();
+                return !(inputInventory.isEmpty() && !outputInventory.isEmpty()) &&
+                        stack.getCount() == 1 && stack.isDamageable() && stack.isEnchanted();
             }
         });
         this.addSlot(new Slot(this.outputInventory, 0, 129, 34) {
@@ -43,7 +43,6 @@ public class GrindstoneContainerRe extends Container {
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
-
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
                 GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -55,7 +54,6 @@ public class GrindstoneContainerRe extends Container {
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
-
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
                 GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -82,11 +80,25 @@ public class GrindstoneContainerRe extends Container {
         ItemStack itemOutput1 = ItemStack.EMPTY;
         ItemStack itemOutput2 = ItemStack.EMPTY;
         // 判断输出
-        if (!itemInput.isEmpty() && itemInput.getCount() == 1 &&
-                itemInput.getItem() != Items.ENCHANTED_BOOK && !itemInput.isEnchanted()) {
-            // 要求输入为 1 个非附魔书的有附魔物品
-            itemOutput1 = this.prepareNewItem(itemInput, itemInput.getDamage(), itemInput.getCount());
-            itemOutput2 = new ItemStack(Item.getItemById(1), 3);
+        if (inputInventory.isEmpty() && outputInventory.isEmpty()) {
+            // 输入输出均为空：保持清空
+        } else if (inputInventory.isEmpty() && !outputInventory.isEmpty()) {
+            // 输入为空，输出不为空
+            if (outputInventory.getStackInSlot(0).isEmpty() || outputInventory.getStackInSlot(1).isEmpty()) {
+                // 刚拿走一个输出物品：输出保持不变
+                itemOutput1 = outputInventory.getStackInSlot(0);
+                itemOutput2 = outputInventory.getStackInSlot(1);
+            } else {
+                // 刚拿走输入物品：清空输出
+            }
+        } else {
+            // 输入不为空，输出为空：更换了一个新的输入物品，更新输出
+            // 输入不为空，输出为空：更新输出
+            if (itemInput.getCount() == 1 && itemInput.isDamageable() && itemInput.isEnchanted()) {
+                // 要求输入为 1 个可损坏的有附魔物品
+                itemOutput1 = this.prepareNewItem(itemInput, itemInput.getDamage());
+                itemOutput2 = new ItemStack(Items.LAPIS_LAZULI, 3);
+            }
         }
         // 设置物品并提交更改
         this.outputInventory.setInventorySlotContents(0, itemOutput1);
@@ -94,8 +106,8 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复损耗等级等
-    private ItemStack prepareNewItem(ItemStack stack, int damage, int count) {
+    // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔等
+    private ItemStack prepareNewItem(ItemStack stack, int damage) {
         ItemStack itemstack = stack.copy();
         itemstack.removeChildTag("Enchantments");
         itemstack.removeChildTag("StoredEnchantments");
@@ -104,23 +116,55 @@ public class GrindstoneContainerRe extends Container {
         } else {
             itemstack.removeChildTag("Damage");
         }
-
-        itemstack.setCount(count);
+        itemstack.setCount(1);
         Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> p_217012_0_.getKey().isCurse()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         EnchantmentHelper.setEnchantments(map, itemstack);
         itemstack.setRepairCost(0);
-        if (itemstack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
-            itemstack = new ItemStack(Items.BOOK);
-            if (stack.hasDisplayName()) {
-                itemstack.setDisplayName(stack.getDisplayName());
-            }
-        }
-
         for (int i = 0; i < map.size(); ++i) {
             itemstack.setRepairCost(RepairContainer.getNewRepairCost(itemstack.getRepairCost()));
         }
-
         return itemstack;
+    }
+
+    // 接口: 当页面关闭时触发，尝试返还物品
+    public void onContainerClosed(PlayerEntity playerIn) {
+        super.onContainerClosed(playerIn);
+        // 如果输入为空则返还输出，如果输出为空则返还输入
+        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_,
+                this.inputInventory.isEmpty() ? this.outputInventory : this.inputInventory));
+    }
+
+
+
+
+    /*
+     * --------------------------------------------------------------
+     *  以下方法直接使用原本的代码，不需要也未曾进行过修改
+     * --------------------------------------------------------------
+     */
+
+    // 构造函数
+    private final IWorldPosCallable worldPosCallable;
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn) {
+        this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
+    }
+    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
+        super(Registry.containerGrindstone.get(), windowIdIn);
+        this.worldPosCallable = worldPosCallableIn;
+        Constuct(windowIdIn, playerInventoryIn, worldPosCallableIn);
+    }
+
+    // 接口: 决定玩家是否可以使用该方块
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.GRINDSTONE);
+    }
+
+    // 接口: 当输入物品改变时触发更新
+    public void onCraftMatrixChanged(IInventory inventoryIn) {
+        super.onCraftMatrixChanged(inventoryIn);
+        if (inventoryIn == this.inputInventory) {
+            this.updateRecipeOutput();
+        }
     }
 
     // 接口: 当玩家使用 Shift+左键 快速转移物品时触发，需要尝试转移物品
@@ -159,47 +203,6 @@ public class GrindstoneContainerRe extends Container {
         }
 
         return itemstack;
-    }
-
-
-
-
-    /*
-     * --------------------------------------------------------------
-     *  以下方法直接使用原本的代码，不需要也未曾进行过修改
-     * --------------------------------------------------------------
-     */
-
-    // 构造函数
-    private final IWorldPosCallable worldPosCallable;
-
-    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn) {
-        this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
-    }
-
-    public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
-        super(Registry.containerGrindstone.get(), windowIdIn);
-        this.worldPosCallable = worldPosCallableIn;
-        Constuct(windowIdIn, playerInventoryIn, worldPosCallableIn);
-    }
-
-    // 接口: 决定玩家是否可以使用该方块
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        return isWithinUsableDistance(this.worldPosCallable, playerIn, Blocks.GRINDSTONE);
-    }
-
-    // 接口: 当输入物品改变时触发更新
-    public void onCraftMatrixChanged(IInventory inventoryIn) {
-        super.onCraftMatrixChanged(inventoryIn);
-        if (inventoryIn == this.inputInventory) {
-            this.updateRecipeOutput();
-        }
-    }
-
-    // 接口: 当页面关闭时触发，尝试返还物品
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
-        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_, this.inputInventory));
     }
 
 }
