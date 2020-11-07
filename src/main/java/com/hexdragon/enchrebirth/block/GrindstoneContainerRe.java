@@ -6,12 +6,12 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.IWorldPosCallable;
@@ -28,7 +28,7 @@ public class GrindstoneContainerRe extends Container {
             GrindstoneContainerRe.this.onCraftMatrixChanged(this);
         }
     };
-    private final IInventory outputInventory = new CraftResultInventory();
+    private final IInventory outputInventory = new Inventory(2);
 
     // 构造页面槽位
     private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
@@ -38,7 +38,19 @@ public class GrindstoneContainerRe extends Container {
                 return stack.isDamageable() || stack.getItem() == Items.ENCHANTED_BOOK || stack.isEnchanted();
             }
         });
-        this.addSlot(new Slot(this.outputInventory, 1, 129, 34) {
+        this.addSlot(new Slot(this.outputInventory, 0, 129, 34) {
+            // 禁止将物品放在输出格
+            public boolean isItemValid(ItemStack stack) {
+                return false;
+            }
+
+            // 从输出格拿走物品时清空输入格
+            public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
+                GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+                return stack;
+            }
+        });
+        this.addSlot(new Slot(this.outputInventory, 1, 129 + 18, 34) {
             // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
                 return false;
@@ -65,18 +77,20 @@ public class GrindstoneContainerRe extends Container {
 
     // 当输入物品改变时更新输出
     private void updateRecipeOutput() {
-        ItemStack itemstack = this.inputInventory.getStackInSlot(0);
-        if (itemstack.isEmpty()) {
-            this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-        } else {
-            boolean flag2 = itemstack.getItem() != Items.ENCHANTED_BOOK && !itemstack.isEnchanted();
-            if (itemstack.getCount() > 1 || flag2) {
-                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                this.detectAndSendChanges();
-                return;
-            }
-            this.outputInventory.setInventorySlotContents(0, this.prepareNewItem(itemstack, itemstack.getDamage(), itemstack.getCount()));
+        // 获取输入
+        ItemStack itemInput = this.inputInventory.getStackInSlot(0);
+        ItemStack itemOutput1 = ItemStack.EMPTY;
+        ItemStack itemOutput2 = ItemStack.EMPTY;
+        // 判断输出
+        if (!itemInput.isEmpty() && itemInput.getCount() == 1 &&
+                itemInput.getItem() != Items.ENCHANTED_BOOK && !itemInput.isEnchanted()) {
+            // 要求输入为 1 个非附魔书的有附魔物品
+            itemOutput1 = this.prepareNewItem(itemInput, itemInput.getDamage(), itemInput.getCount());
+            itemOutput2 = new ItemStack(Item.getItemById(1), 3);
         }
+        // 设置物品并提交更改
+        this.outputInventory.setInventorySlotContents(0, itemOutput1);
+        this.outputInventory.setInventorySlotContents(1, itemOutput2);
         this.detectAndSendChanges();
     }
 
@@ -109,7 +123,7 @@ public class GrindstoneContainerRe extends Container {
         return itemstack;
     }
 
-    // 接口: 当玩家使用 Shift+点击 点击某个物品以快速转移时触发，需要尝试转移物品
+    // 接口: 当玩家使用 Shift+左键 快速转移物品时触发，需要尝试转移物品
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.inventorySlots.get(index);
