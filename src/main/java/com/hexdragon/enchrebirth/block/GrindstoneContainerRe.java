@@ -77,7 +77,7 @@ public class GrindstoneContainerRe extends Container {
                     while (l > 0) {
                         int i1 = ExperienceOrbEntity.getXPSplit(l);
                         l -= i1;
-                        p_216944_1_.addEntity(new ExperienceOrbEntity(p_216944_1_, (double) p_216944_2_.getX(), (double) p_216944_2_.getY() + 0.5D, (double) p_216944_2_.getZ() + 0.5D, i1));
+                        p_216944_1_.addEntity(new ExperienceOrbEntity(p_216944_1_, p_216944_2_.getX(), (double) p_216944_2_.getY() + 0.5D, (double) p_216944_2_.getZ() + 0.5D, i1));
                     }
 
                     p_216944_1_.playEvent(1042, p_216944_2_, 0);
@@ -129,7 +129,7 @@ public class GrindstoneContainerRe extends Container {
         }
 
         for (int k = 0; k < 9; ++k) {
-            this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 152)); // Modified
+            this.addSlot(new Slot(playerInventoryIn, k, 8 + k * 18, 142));
         }
 
     }
@@ -226,9 +226,7 @@ public class GrindstoneContainerRe extends Container {
         }
 
         itemstack.setCount(count);
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> {
-            return p_217012_0_.getKey().isCurse();
-        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> p_217012_0_.getKey().isCurse()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         EnchantmentHelper.setEnchantments(map, itemstack);
         itemstack.setRepairCost(0);
         if (itemstack.getItem() == Items.ENCHANTED_BOOK && map.size() == 0) {
@@ -250,9 +248,7 @@ public class GrindstoneContainerRe extends Container {
      */
     public void onContainerClosed(PlayerEntity playerIn) {
         super.onContainerClosed(playerIn);
-        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> {
-            this.clearContainer(playerIn, p_217009_2_, this.inputInventory);
-        });
+        this.worldPosCallable.consume((p_217009_2_, p_217009_3_) -> this.clearContainer(playerIn, p_217009_2_, this.inputInventory));
     }
 
     /**
@@ -282,11 +278,11 @@ public class GrindstoneContainerRe extends Container {
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (index != 0 && index != 1) {
                 if (!itemstack2.isEmpty() && !itemstack3.isEmpty()) {
-                    if (index >= 3 && index < 30) {
+                    if (index < 30) {
                         if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
                             return ItemStack.EMPTY;
                         }
-                    } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+                    } else if (index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else if (!this.mergeItemStack(itemstack1, 0, 2, false)) {

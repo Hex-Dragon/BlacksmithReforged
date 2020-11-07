@@ -22,6 +22,7 @@ public abstract class GrindstoneBlockMixin extends HorizontalFaceBlock {
         super(builder);
     }
 
+    // 将砂轮的处理事件替换为 Mod 所提供的事件
     @Inject(method = "getContainer", at = @At(value = "HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void getContainer(BlockState state, World worldIn, BlockPos pos, CallbackInfoReturnable<INamedContainerProvider> cir) {
         cir.setReturnValue(new SimpleNamedContainerProvider(
