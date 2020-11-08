@@ -108,7 +108,8 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // TODO : 打开砂轮物品栏关闭游戏，会在重新上线后掉落全部物品
+    // TODO : 打开砂轮物品栏时关闭游戏，会在重新上线后掉落包括输入和输出预览的全部物品
+    // TODO : 将砂轮 GUI 左侧的砂轮图片换成渲染的 3D 方块模型，这样可以做到材质包兼容
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
     private ItemStack prepareNewItem(ItemStack stack) {
         ItemStack itemstack = stack.copy();
@@ -122,7 +123,7 @@ public class GrindstoneContainerRe extends Container {
         Map<Enchantment, Integer> map = EnchantmentHelperRe.getCurseEnchantments(stack);
         EnchantmentHelper.setEnchantments(map, itemstack);
         // 重置修复消耗
-        itemstack.setRepairCost(0);
+        itemstack.removeChildTag("RepairCost");
         return itemstack;
     }
 
@@ -134,6 +135,39 @@ public class GrindstoneContainerRe extends Container {
                 this.inputInventory.isEmpty() ? this.outputInventory : this.inputInventory));
     }
 
+    // 接口: 当玩家使用 Shift+左键 快速转移物品时触发，需要尝试转移物品
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+        // 事实上就大概差不多改了下，完全没看懂这是在干啥
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+
+            if (index == 1 || index == 2) {
+                if (!this.mergeItemStack(itemstack1, 3, 39, true)) return ItemStack.EMPTY;
+                slot.onSlotChange(itemstack1, itemstack);
+            } else if (index != 0) {
+                if (!this.mergeItemStack(itemstack1, 0, 2, false)) return ItemStack.EMPTY;
+            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty()) {
+                slot.putStack(ItemStack.EMPTY);
+            } else {
+                slot.onSlotChanged();
+            }
+
+            if (itemstack1.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(playerIn, itemstack1);
+        }
+
+        return itemstack;
+    }
 
 
 
@@ -167,42 +201,5 @@ public class GrindstoneContainerRe extends Container {
         }
     }
 
-    // 接口: 当玩家使用 Shift+左键 快速转移物品时触发，需要尝试转移物品
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
-            ItemStack itemstack2 = this.inputInventory.getStackInSlot(0);
-            if (index == 2) {
-                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
-                    return ItemStack.EMPTY;
-                }
-
-                slot.onSlotChange(itemstack1, itemstack);
-            } else if (index != 0 && index != 1) {
-                if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (itemstack1.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
-            } else {
-                slot.onSlotChanged();
-            }
-
-            if (itemstack1.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(playerIn, itemstack1);
-        }
-
-        return itemstack;
-    }
 
 }
