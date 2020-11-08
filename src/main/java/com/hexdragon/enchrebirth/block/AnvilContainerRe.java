@@ -45,7 +45,7 @@ public class AnvilContainerRe extends Container {
             }
             // 确认玩家能否拿走物品
             public boolean canTakeStack(PlayerEntity player) {
-                return (player.abilities.isCreativeMode || player.experienceLevel >= totalCost.get()) && totalCost.get() > 0;
+                return player.abilities.isCreativeMode || player.experienceLevel >= totalCost.get();
             }
             // 触发玩家拿走物品的事件
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
@@ -75,12 +75,12 @@ public class AnvilContainerRe extends Container {
 
         // 获取输入物品，并检查不为空
         ItemStack inputItem = this.inputInventory.getStackInSlot(0);
-        if (inputItem.isEmpty()) {
+        ItemStack middleItem = this.inputInventory.getStackInSlot(1);
+        if (inputItem.isEmpty() || middleItem.isEmpty()) {
             this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
             this.totalCost.set(0);
             return;
         }
-        ItemStack middleItem = this.inputInventory.getStackInSlot(1);
         ItemStack outputItem = inputItem.copy();
 
         this.totalCost.set(1);
@@ -89,116 +89,115 @@ public class AnvilContainerRe extends Container {
         this.materialCost = 0;
         Map<Enchantment, Integer> outputEnchantments = EnchantmentHelper.getEnchantments(outputItem);
 
-        if (!middleItem.isEmpty()) {
-            if (!onAnvilChange(this, inputItem, middleItem, outputInventory, inputItem.getDisplayName().getString(), baseCost))
+        if (!onAnvilChange(this, inputItem, middleItem, outputInventory, inputItem.getDisplayName().getString(), baseCost))
+            return;
+        if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(inputItem, middleItem)) {
+            int l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
+            if (l2 <= 0) {
+                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+                this.totalCost.set(0);
                 return;
-            if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(inputItem, middleItem)) {
-                int l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
-                if (l2 <= 0) {
-                    this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                    this.totalCost.set(0);
-                    return;
+            }
+
+            int i3;
+            for (i3 = 0; l2 > 0 && i3 < middleItem.getCount(); ++i3) {
+                int j3 = outputItem.getDamage() - l2;
+                outputItem.setDamage(j3);
+                ++recipeCost;
+                l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
+            }
+
+            this.materialCost = i3;
+        } else {
+            if (outputItem.getItem() != middleItem.getItem() || !outputItem.isDamageable()) {
+                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+                this.totalCost.set(0);
+                return;
+            }
+
+            if (outputItem.isDamageable()) {
+                int l = inputItem.getMaxDamage() - inputItem.getDamage();
+                int i1 = middleItem.getMaxDamage() - middleItem.getDamage();
+                int j1 = i1 + outputItem.getMaxDamage() * 12 / 100;
+                int k1 = l + j1;
+                int l1 = outputItem.getMaxDamage() - k1;
+                if (l1 < 0) {
+                    l1 = 0;
                 }
 
-                int i3;
-                for (i3 = 0; l2 > 0 && i3 < middleItem.getCount(); ++i3) {
-                    int j3 = outputItem.getDamage() - l2;
-                    outputItem.setDamage(j3);
-                    ++recipeCost;
-                    l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
+                if (l1 < outputItem.getDamage()) {
+                    outputItem.setDamage(l1);
+                    recipeCost += 2;
                 }
+            }
 
-                this.materialCost = i3;
-            } else {
-                if (outputItem.getItem() != middleItem.getItem() || !outputItem.isDamageable()) {
-                    this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                    this.totalCost.set(0);
-                    return;
-                }
+            Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(middleItem);
+            boolean flag2 = false;
+            boolean flag3 = false;
 
-                if (outputItem.isDamageable()) {
-                    int l = inputItem.getMaxDamage() - inputItem.getDamage();
-                    int i1 = middleItem.getMaxDamage() - middleItem.getDamage();
-                    int j1 = i1 + outputItem.getMaxDamage() * 12 / 100;
-                    int k1 = l + j1;
-                    int l1 = outputItem.getMaxDamage() - k1;
-                    if (l1 < 0) {
-                        l1 = 0;
+            for (Enchantment enchantment1 : map1.keySet()) {
+                if (enchantment1 != null) {
+                    int i2 = outputEnchantments.getOrDefault(enchantment1, 0);
+                    int j2 = map1.get(enchantment1);
+                    j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+                    boolean flag1 = enchantment1.canApply(inputItem);
+                    if (this.player.abilities.isCreativeMode || inputItem.getItem() == Items.ENCHANTED_BOOK) {
+                        flag1 = true;
                     }
 
-                    if (l1 < outputItem.getDamage()) {
-                        outputItem.setDamage(l1);
-                        recipeCost += 2;
+                    for (Enchantment enchantment : outputEnchantments.keySet()) {
+                        if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
+                            flag1 = false;
+                            ++recipeCost;
+                        }
                     }
-                }
 
-                Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(middleItem);
-                boolean flag2 = false;
-                boolean flag3 = false;
-
-                for (Enchantment enchantment1 : map1.keySet()) {
-                    if (enchantment1 != null) {
-                        int i2 = outputEnchantments.getOrDefault(enchantment1, 0);
-                        int j2 = map1.get(enchantment1);
-                        j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                        boolean flag1 = enchantment1.canApply(inputItem);
-                        if (this.player.abilities.isCreativeMode || inputItem.getItem() == Items.ENCHANTED_BOOK) {
-                            flag1 = true;
+                    if (!flag1) {
+                        flag3 = true;
+                    } else {
+                        flag2 = true;
+                        if (j2 > enchantment1.getMaxLevel()) {
+                            j2 = enchantment1.getMaxLevel();
                         }
 
-                        for (Enchantment enchantment : outputEnchantments.keySet()) {
-                            if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
-                                flag1 = false;
-                                ++recipeCost;
-                            }
+                        outputEnchantments.put(enchantment1, j2);
+                        int k3 = 0;
+                        switch (enchantment1.getRarity()) {
+                            case COMMON:
+                                k3 = 1;
+                                break;
+                            case UNCOMMON:
+                                k3 = 2;
+                                break;
+                            case RARE:
+                                k3 = 4;
+                                break;
+                            case VERY_RARE:
+                                k3 = 8;
                         }
 
-                        if (!flag1) {
-                            flag3 = true;
-                        } else {
-                            flag2 = true;
-                            if (j2 > enchantment1.getMaxLevel()) {
-                                j2 = enchantment1.getMaxLevel();
-                            }
-
-                            outputEnchantments.put(enchantment1, j2);
-                            int k3 = 0;
-                            switch (enchantment1.getRarity()) {
-                                case COMMON:
-                                    k3 = 1;
-                                    break;
-                                case UNCOMMON:
-                                    k3 = 2;
-                                    break;
-                                case RARE:
-                                    k3 = 4;
-                                    break;
-                                case VERY_RARE:
-                                    k3 = 8;
-                            }
-
-                            recipeCost += k3 * j2;
-                            if (inputItem.getCount() > 1) {
-                                recipeCost = 100;
-                            }
+                        recipeCost += k3 * j2;
+                        if (inputItem.getCount() > 1) {
+                            recipeCost = 100;
                         }
                     }
                 }
+            }
 
-                if (flag3 && !flag2) {
-                    this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                    this.totalCost.set(0);
-                    return;
-                }
+            if (flag3 && !flag2) {
+                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+                this.totalCost.set(0);
+                return;
             }
         }
 
+        // 设置花费并检查玩家等级是否足够
         this.totalCost.set(baseCost + recipeCost);
-
-        if (recipeCost <= 0 || this.totalCost.get() >= 100 && !this.player.abilities.isCreativeMode)
+        if ((baseCost + recipeCost) >= 100 && !this.player.abilities.isCreativeMode) {
+            // 玩家等级不够
             outputItem = ItemStack.EMPTY;
-
-        if (!outputItem.isEmpty()) {
+        } else {
+            // 玩家等级足够
             int newRepairCost = outputItem.getRepairCost();
             if (!middleItem.isEmpty() && newRepairCost < middleItem.getRepairCost()) {
                 newRepairCost = middleItem.getRepairCost();
@@ -208,31 +207,9 @@ public class AnvilContainerRe extends Container {
             EnchantmentHelper.setEnchantments(outputEnchantments, outputItem);
         }
 
+        // 设置输出
         this.outputInventory.setInventorySlotContents(0, outputItem);
         this.detectAndSendChanges();
-    }
-
-
-
-
-    /*
-     * --------------------------------------------------------------
-     *  以下方法直接使用原本的代码，不需要进行修改
-     * --------------------------------------------------------------
-     */
-
-    // 构造函数
-    private final IWorldPosCallable worldPosCallable;
-    private final PlayerEntity player;
-    public AnvilContainerRe(int id, PlayerInventory playerInventory) {
-        this(id, playerInventory, IWorldPosCallable.DUMMY);
-    }
-    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-        super(RegMain.containerAnvil.get(), id);
-        this.worldPosCallable = worldPosCallable;
-        this.player = playerInventory.player;
-        Constuct(playerInventory);
-        this.trackInt(this.totalCost);
     }
 
     // 在玩家从输出格拿走物品时触发：扣除等级、损坏铁砧、清空输入
@@ -275,6 +252,29 @@ public class AnvilContainerRe extends Container {
         }
 
         return itemStack;
+    }
+
+
+
+
+    /*
+     * --------------------------------------------------------------
+     *  以下方法直接使用原本的代码，不需要进行修改
+     * --------------------------------------------------------------
+     */
+
+    // 构造函数
+    private final IWorldPosCallable worldPosCallable;
+    private final PlayerEntity player;
+    public AnvilContainerRe(int id, PlayerInventory playerInventory) {
+        this(id, playerInventory, IWorldPosCallable.DUMMY);
+    }
+    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
+        super(RegMain.containerAnvil.get(), id);
+        this.worldPosCallable = worldPosCallable;
+        this.player = playerInventory.player;
+        Constuct(playerInventory);
+        this.trackInt(this.totalCost);
     }
 
     // 接口: 当输入物品改变时触发更新
