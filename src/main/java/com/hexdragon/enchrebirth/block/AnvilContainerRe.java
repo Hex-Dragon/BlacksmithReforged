@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
@@ -14,7 +15,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraftforge.common.MinecraftForge;
@@ -89,7 +89,7 @@ public class AnvilContainerRe extends Container {
             // 使用原材料修复物品
 
             // 获取每个材料修复的耐久度
-            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
+            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * 0.95F));
             if (decrDamagePerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
@@ -99,7 +99,7 @@ public class AnvilContainerRe extends Container {
             int materialCost;
             for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
                 outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
-                decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
+                decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * 0.95F));
             }
             this.materialCost = materialCost;
 
@@ -112,57 +112,18 @@ public class AnvilContainerRe extends Container {
         } else {
             // 使用两个相同物品进行修复
 
-            int l = inputItem.getMaxDamage() - inputItem.getDamage();
-            int i1 = middleItem.getMaxDamage() - middleItem.getDamage();
-            int j1 = i1 + outputItem.getMaxDamage() * 12 / 100;
-            int k1 = l + j1;
-            int l1 = outputItem.getMaxDamage() - k1;
-            if (l1 < 0) {
-                l1 = 0;
-            }
+            // 获取修复后的 Damage
+            int dur1 = inputItem.getMaxDamage() - inputItem.getDamage();
+            int dur2 = middleItem.getMaxDamage() - middleItem.getDamage();
+            int durNew = dur1 + dur2 + outputItem.getMaxDamage() * 15 / 100 + 1; // 额外奖励 15% 耐久度
+            int newDamage = outputItem.getMaxDamage() - durNew;
+            if (newDamage < 0) newDamage = 0;
+            if (newDamage < outputItem.getDamage()) outputItem.setDamage(newDamage);
 
-            if (l1 < outputItem.getDamage()) {
-                outputItem.setDamage(l1);
-            }
+            // 将第二个物品的诅咒转移到第一个物品
+            Map<Enchantment, Integer> curses = EnchantmentHelperRe.getCurseEnchantments(middleItem);
+            if (curses.size() > 0) outputEnchantments.putAll(curses);
 
-            Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(middleItem);
-            boolean flag2 = false;
-            boolean flag3 = false;
-
-            for (Enchantment enchantment1 : map1.keySet()) {
-                if (enchantment1 != null) {
-                    int i2 = outputEnchantments.getOrDefault(enchantment1, 0);
-                    int j2 = map1.get(enchantment1);
-                    j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
-                    boolean flag1 = enchantment1.canApply(inputItem);
-                    if (this.player.abilities.isCreativeMode || inputItem.getItem() == Items.ENCHANTED_BOOK) {
-                        flag1 = true;
-                    }
-
-                    for (Enchantment enchantment : outputEnchantments.keySet()) {
-                        if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
-                            flag1 = false;
-                        }
-                    }
-
-                    if (!flag1) {
-                        flag3 = true;
-                    } else {
-                        flag2 = true;
-                        if (j2 > enchantment1.getMaxLevel()) {
-                            j2 = enchantment1.getMaxLevel();
-                        }
-
-                        outputEnchantments.put(enchantment1, j2);
-
-                    }
-                }
-            }
-
-            if (flag3 && !flag2) {
-                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                return;
-            }
         }
 
         // 设置新物品的附魔
