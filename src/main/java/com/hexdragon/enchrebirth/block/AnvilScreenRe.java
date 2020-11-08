@@ -37,17 +37,18 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         RenderSystem.disableBlend();
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        int maximumCost = this.container.totalCost.get();
-        if (maximumCost > 0) {
+        // 花费等级的文本提示
+        int cost = this.container.totalCost.get();
+        if (cost > 0) {
             int fontColor = 8453920;
             ITextComponent itextcomponent;
-            if (maximumCost >= 100 && !this.minecraft.player.abilities.isCreativeMode) {
+            if (cost >= 100 && !this.minecraft.player.abilities.isCreativeMode) {
                 itextcomponent = new TranslationTextComponent("container.repair.expensive");
                 fontColor = 16736352;
             } else if (!this.container.getSlot(2).getHasStack()) {
                 itextcomponent = null;
             } else {
-                itextcomponent = new TranslationTextComponent("container.repair.cost", maximumCost);
+                itextcomponent = new TranslationTextComponent("container.repair.cost", cost);
                 if (!this.container.getSlot(2).canTakeStack(this.playerInventory.player)) {
                     fontColor = 16736352;
                 }
