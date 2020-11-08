@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.enchrebirth.EnchRebirth;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -13,12 +14,12 @@ import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
 public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
-    private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation("textures/gui/container/anvil.png");
+    private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation(EnchRebirth.MODID, "textures/gui/container/anvil.png");
 
     public AnvilScreenRe(AnvilContainerRe container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);
         this.playerInventoryTitleY = 1000000; // 关闭 “物品栏” 三个字的显示
-        this.titleX = 60;
+        this.titleX = 61; this.titleY = 12; this.ySize = 150;
     }
 
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
@@ -29,7 +30,7 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
         this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
         // 显示无法合成的红叉：输入不为空但输出为空
         if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
-            this.blit(matrixStack, i + 99, j + 45, this.xSize, 0, 28, 21);
+            this.blit(matrixStack, i + 103, j + 26, this.xSize, 0, 28, 21);
         }
     }
 

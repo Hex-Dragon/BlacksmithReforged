@@ -36,9 +36,9 @@ public class AnvilContainerRe extends Container {
 
     // 构造页面槽位
     private void Constuct(PlayerInventory playerInventory) {
-        this.addSlot(new Slot(this.inputInventory, 0, 27, 47));
-        this.addSlot(new Slot(this.inputInventory, 1, 76, 47));
-        this.addSlot(new Slot(this.outputInventory, 2, 134, 47) {
+        this.addSlot(new Slot(this.inputInventory, 0, 62, 28));
+        this.addSlot(new Slot(this.inputInventory, 1, 80, 28));
+        this.addSlot(new Slot(this.outputInventory, 2, 138, 28) {
             // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
                 return false;
@@ -50,7 +50,7 @@ public class AnvilContainerRe extends Container {
         });
 
         // 增加物品栏与快捷栏槽位
-        int yPositionStart = 84;
+        int yPositionStart = 68;
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, yPositionStart + i * 18));
@@ -135,6 +135,8 @@ public class AnvilContainerRe extends Container {
     }
 
     // 铁砧相对于原版，损坏概率的百分比
+    // 对于原版：“平均每个铁砧能用 25 次，相当于每用一次铁砧就消耗了 1.24 个用于合成铁砧的铁锭”
+    // 考虑到铁砧现在没有等级消耗，略微增加损耗速率是比较平衡的
     private final static float AnvilBreakChanceM = 1.5F;
     // 在玩家从输出格拿走物品时触发：损坏铁砧、清空输入
     private ItemStack onTakeOutput(PlayerEntity player, ItemStack itemStack) {
