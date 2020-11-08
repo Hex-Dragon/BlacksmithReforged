@@ -1,5 +1,7 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.core.item.EnchantmentHelperRe;
+import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.reg.Registry;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -16,7 +18,6 @@ import net.minecraft.item.Items;
 import net.minecraft.util.IWorldPosCallable;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GrindstoneContainerRe extends Container {
 
@@ -34,8 +35,7 @@ public class GrindstoneContainerRe extends Container {
         this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
             // 检查物品是否能输入：没有没拿走的输出，且接受输入
             public boolean isItemValid(ItemStack stack) {
-                return !(inputInventory.isEmpty() && !outputInventory.isEmpty()) &&
-                        stack.getCount() == 1 && stack.isDamageable() && stack.isEnchanted();
+                return !(inputInventory.isEmpty() && !outputInventory.isEmpty()) && stack.getCount() == 1 && stack.isDamageable();
             }
         });
         this.addSlot(new Slot(this.outputInventory, 0, 129, 34) {
@@ -94,10 +94,11 @@ public class GrindstoneContainerRe extends Container {
         } else {
             // 输入不为空，输出为空：更换了一个新的输入物品，更新输出
             // 输入不为空，输出为空：更新输出
-            if (itemInput.getCount() == 1 && itemInput.isDamageable() && itemInput.isEnchanted()) {
-                // 要求输入为 1 个可损坏的有附魔物品
-                itemOutput1 = this.prepareNewItem(itemInput, itemInput.getDamage());
-                itemOutput2 = new ItemStack(Items.LAPIS_LAZULI, 3);
+            Map<Enchantment, Integer> DeletedEnchantments = EnchantmentHelperRe.getNonCurseEnchantments(itemInput);
+            if (DeletedEnchantments.size() >= 1) {
+                // 要求输入为有非诅咒附魔的物品
+                itemOutput1 = this.prepareNewItem(itemInput);
+                itemOutput2 = new ItemStack(Items.LAPIS_LAZULI, DeletedEnchantments.size()); // 每删除一个附魔给予一个青金石
             }
         }
         // 设置物品并提交更改
@@ -106,19 +107,19 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔等
-    private ItemStack prepareNewItem(ItemStack stack, int damage) {
+    // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
+    private ItemStack prepareNewItem(ItemStack stack) {
         ItemStack itemstack = stack.copy();
-        itemstack.removeChildTag("Enchantments");
-        itemstack.removeChildTag("StoredEnchantments");
-        if (damage > 0) {
-            itemstack.setDamage(damage);
-        } else {
-            itemstack.removeChildTag("Damage");
-        }
         itemstack.setCount(1);
-        Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> p_217012_0_.getKey().isCurse()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        // 设置损伤值：消耗 0.4 个物品原料的耐久
+        int newDamage = Math.min(itemstack.getMaxDamage(),
+                itemstack.getDamage() + (int) (itemstack.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(itemstack) * 0.4F));
+        itemstack.setDamage(newDamage);
+        // 移除非诅咒附魔
+        itemstack.removeChildTag("Enchantments");
+        Map<Enchantment, Integer> map = EnchantmentHelperRe.getCurseEnchantments(stack);
         EnchantmentHelper.setEnchantments(map, itemstack);
+        // 根据附魔数重置修复消耗
         itemstack.setRepairCost(0);
         for (int i = 0; i < map.size(); ++i) {
             itemstack.setRepairCost(RepairContainer.getNewRepairCost(itemstack.getRepairCost()));
