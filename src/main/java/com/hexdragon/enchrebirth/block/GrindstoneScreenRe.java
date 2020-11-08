@@ -26,10 +26,13 @@ public class GrindstoneScreenRe extends ContainerScreen<GrindstoneContainerRe> {
 
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        assert this.minecraft != null;
         this.minecraft.getTextureManager().bindTexture(GRINDSTONE_GUI_TEXTURES);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
+        // 显示无法合成的红叉：输入、输出仅一方为空
+        if (this.container.getSlot(0).getHasStack() ^ (this.container.getSlot(1).getHasStack() || this.container.getSlot(2).getHasStack())) {
+            this.blit(matrixStack, i + 92, j + 31, this.xSize, 0, 28, 21);
+        }
     }
 }
