@@ -37,7 +37,7 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         RenderSystem.disableBlend();
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        int maximumCost = this.container.getMaximumCost();
+        int maximumCost = this.container.totalCost.get();
         if (maximumCost > 0) {
             int fontColor = 8453920;
             ITextComponent itextcomponent;
