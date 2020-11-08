@@ -45,8 +45,8 @@ public class ItemHelperRe {
         if (id.contains("horse_armor")) return 7;
         // 根据特定种类判断
         if (item == Items.FLINT_AND_STEEL || item == Items.SHIELD) return 1;
-        if (item == Items.FISHING_ROD || item == Items.WARPED_FUNGUS_ON_A_STICK || item == Items.CARROT_ON_A_STICK || item.isCrossbow(itemStack))
-            return 2;
+        if (item == Items.FISHING_ROD || item.isCrossbow(itemStack)) return 2;
+        // 如果本来就应该是 3 就不作判断
         // 如果未找到则视作 3
         return 3;
     }

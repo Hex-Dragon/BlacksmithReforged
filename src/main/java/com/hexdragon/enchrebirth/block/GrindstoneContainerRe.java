@@ -3,7 +3,7 @@ package com.hexdragon.enchrebirth.block;
 import com.hexdragon.core.item.CraftResultInventoryRe;
 import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
-import com.hexdragon.enchrebirth.reg.Registry;
+import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -180,7 +180,7 @@ public class GrindstoneContainerRe extends Container {
         this(windowIdIn, playerInventoryIn, IWorldPosCallable.DUMMY);
     }
     public GrindstoneContainerRe(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
-        super(Registry.containerGrindstone.get(), windowIdIn);
+        super(RegMain.containerGrindstone.get(), windowIdIn);
         this.worldPosCallable = worldPosCallableIn;
         Constuct(windowIdIn, playerInventoryIn, worldPosCallableIn);
     }

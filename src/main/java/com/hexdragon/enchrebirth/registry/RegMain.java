@@ -1,4 +1,4 @@
-package com.hexdragon.enchrebirth.reg;
+package com.hexdragon.enchrebirth.registry;
 
 import com.hexdragon.enchrebirth.EnchRebirth;
 import com.hexdragon.enchrebirth.block.GrindstoneContainerRe;
@@ -10,7 +10,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class Registry {
+public class RegMain {
 
     // 容器
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, EnchRebirth.MODID);

@@ -16,7 +16,7 @@ public class GrindstoneScreenRe extends ContainerScreen<GrindstoneContainerRe> {
 
     public GrindstoneScreenRe(GrindstoneContainerRe container, PlayerInventory playerInventory, ITextComponent textComponent) {
         super(container, playerInventory, textComponent);
-        this.playerInventoryTitleY = 1000000; // 关闭显示
+        this.playerInventoryTitleY = 1000000; // 关闭 “物品栏” 三个字的显示
         this.titleX = 61; this.titleY = 12; this.ySize = 150;
     }
 

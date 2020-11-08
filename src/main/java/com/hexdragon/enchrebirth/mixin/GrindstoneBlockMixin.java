@@ -18,9 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(GrindstoneBlock.class)
 public abstract class GrindstoneBlockMixin extends HorizontalFaceBlock {
-    public GrindstoneBlockMixin(Properties builder) {
-        super(builder);
-    }
+    public GrindstoneBlockMixin(Properties builder) {super(builder);}
 
     // 将砂轮的处理事件替换为 Mod 所提供的事件
     @Inject(method = "getContainer", at = @At(value = "HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
