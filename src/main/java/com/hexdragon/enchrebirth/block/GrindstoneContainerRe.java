@@ -40,9 +40,7 @@ public class GrindstoneContainerRe extends Container {
         });
         this.addSlot(new Slot(this.outputInventory, 0, 120, 28) {
             // 禁止将物品放在输出格
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
+            public boolean isItemValid(ItemStack stack) {return false;}
 
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
@@ -52,9 +50,7 @@ public class GrindstoneContainerRe extends Container {
         });
         this.addSlot(new Slot(this.outputInventory, 1, 120 + 18, 28) {
             // 禁止将物品放在输出格
-            public boolean isItemValid(ItemStack stack) {
-                return false;
-            }
+            public boolean isItemValid(ItemStack stack) {return false;}
 
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {

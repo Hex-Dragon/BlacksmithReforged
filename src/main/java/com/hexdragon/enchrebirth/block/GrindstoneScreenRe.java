@@ -1,8 +1,8 @@
 package com.hexdragon.enchrebirth.block;
 
-import com.hexdragon.core.gui.ContainerScreenRe;
 import com.hexdragon.enchrebirth.EnchRebirth;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -11,12 +11,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
-public class GrindstoneScreenRe extends ContainerScreenRe<GrindstoneContainerRe> {
+public class GrindstoneScreenRe extends ContainerScreen<GrindstoneContainerRe> {
     private static final ResourceLocation GRINDSTONE_GUI_TEXTURES = new ResourceLocation(EnchRebirth.MODID, "textures/gui/container/grindstone.png");
 
     public GrindstoneScreenRe(GrindstoneContainerRe container, PlayerInventory playerInventory, ITextComponent textComponent) {
         super(container, playerInventory, textComponent);
-        this.showPlayerInventoryTitle = false;
+        this.playerInventoryTitleY = 1000000; // 关闭显示
         this.titleX = 61; this.titleY = 12; this.ySize = 150;
     }
 
