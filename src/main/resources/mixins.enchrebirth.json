@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "RepairItemRecipeMixin",
-    "GrindstoneBlockMixin"
+    "block/GrindstoneBlockMixin",
+    "block/AnvilBlockMixin"
   ]
 }
