@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
@@ -16,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.IWorldPosCallable;
-import net.minecraft.util.IntReferenceHolder;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
 
@@ -43,10 +43,6 @@ public class AnvilContainerRe extends Container {
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
-            // 确认玩家能否拿走物品
-            public boolean canTakeStack(PlayerEntity player) {
-                return player.abilities.isCreativeMode || player.experienceLevel >= totalCost.get();
-            }
             // 触发玩家拿走物品的事件
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
                 return AnvilContainerRe.this.onTakeOutput(thePlayer, stack);
@@ -67,8 +63,6 @@ public class AnvilContainerRe extends Container {
 
     // 消耗的物品合成原料个数
     public int materialCost;
-    // 消耗的等级
-    public final IntReferenceHolder totalCost = IntReferenceHolder.single();
 
     // 当输入物品改变时更新输出
     public void updateRepairOutput() {
@@ -78,57 +72,57 @@ public class AnvilContainerRe extends Container {
         ItemStack middleItem = this.inputInventory.getStackInSlot(1);
         if (inputItem.isEmpty() || middleItem.isEmpty()) {
             this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-            this.totalCost.set(0);
             return;
         }
         ItemStack outputItem = inputItem.copy();
 
-        this.totalCost.set(1);
-        int recipeCost = 0;
-        int baseCost = inputItem.getRepairCost() + (middleItem.isEmpty() ? 0 : middleItem.getRepairCost());
+        // 初始化
         this.materialCost = 0;
         Map<Enchantment, Integer> outputEnchantments = EnchantmentHelper.getEnchantments(outputItem);
 
-        if (!onAnvilChange(this, inputItem, middleItem, outputInventory, inputItem.getDisplayName().getString(), baseCost))
+        // 调用钩子函数
+        if (!onAnvilChange(this, inputItem, middleItem, outputInventory, inputItem.getDisplayName().getString(), 0))
             return;
+
+        // 判断配方情况
         if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(inputItem, middleItem)) {
-            int l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
-            if (l2 <= 0) {
+            // 使用原材料修复物品
+
+            // 获取每个材料修复的耐久度
+            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
+            if (decrDamagePerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                this.totalCost.set(0);
                 return;
             }
 
-            int i3;
-            for (i3 = 0; l2 > 0 && i3 < middleItem.getCount(); ++i3) {
-                int j3 = outputItem.getDamage() - l2;
-                outputItem.setDamage(j3);
-                ++recipeCost;
-                l2 = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / 4);
+            // 获取消耗的材料个数
+            int materialCost;
+            for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
+                outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
+                decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
             }
+            this.materialCost = materialCost;
 
-            this.materialCost = i3;
+        } else if (outputItem.getItem() != middleItem.getItem() || !outputItem.isDamageable()) {
+            // 配方无效，直接结束
+
+            this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+            return;
+
         } else {
-            if (outputItem.getItem() != middleItem.getItem() || !outputItem.isDamageable()) {
-                this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                this.totalCost.set(0);
-                return;
+            // 使用两个相同物品进行修复
+
+            int l = inputItem.getMaxDamage() - inputItem.getDamage();
+            int i1 = middleItem.getMaxDamage() - middleItem.getDamage();
+            int j1 = i1 + outputItem.getMaxDamage() * 12 / 100;
+            int k1 = l + j1;
+            int l1 = outputItem.getMaxDamage() - k1;
+            if (l1 < 0) {
+                l1 = 0;
             }
 
-            if (outputItem.isDamageable()) {
-                int l = inputItem.getMaxDamage() - inputItem.getDamage();
-                int i1 = middleItem.getMaxDamage() - middleItem.getDamage();
-                int j1 = i1 + outputItem.getMaxDamage() * 12 / 100;
-                int k1 = l + j1;
-                int l1 = outputItem.getMaxDamage() - k1;
-                if (l1 < 0) {
-                    l1 = 0;
-                }
-
-                if (l1 < outputItem.getDamage()) {
-                    outputItem.setDamage(l1);
-                    recipeCost += 2;
-                }
+            if (l1 < outputItem.getDamage()) {
+                outputItem.setDamage(l1);
             }
 
             Map<Enchantment, Integer> map1 = EnchantmentHelper.getEnchantments(middleItem);
@@ -148,7 +142,6 @@ public class AnvilContainerRe extends Container {
                     for (Enchantment enchantment : outputEnchantments.keySet()) {
                         if (enchantment != enchantment1 && !enchantment1.isCompatibleWith(enchantment)) {
                             flag1 = false;
-                            ++recipeCost;
                         }
                     }
 
@@ -161,69 +154,35 @@ public class AnvilContainerRe extends Container {
                         }
 
                         outputEnchantments.put(enchantment1, j2);
-                        int k3 = 0;
-                        switch (enchantment1.getRarity()) {
-                            case COMMON:
-                                k3 = 1;
-                                break;
-                            case UNCOMMON:
-                                k3 = 2;
-                                break;
-                            case RARE:
-                                k3 = 4;
-                                break;
-                            case VERY_RARE:
-                                k3 = 8;
-                        }
 
-                        recipeCost += k3 * j2;
-                        if (inputItem.getCount() > 1) {
-                            recipeCost = 100;
-                        }
                     }
                 }
             }
 
             if (flag3 && !flag2) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-                this.totalCost.set(0);
                 return;
             }
         }
 
-        // 设置花费并检查玩家等级是否足够
-        this.totalCost.set(baseCost + recipeCost);
-        if ((baseCost + recipeCost) >= 100 && !this.player.abilities.isCreativeMode) {
-            // 玩家等级不够
-            outputItem = ItemStack.EMPTY;
-        } else {
-            // 玩家等级足够
-            int newRepairCost = outputItem.getRepairCost();
-            if (!middleItem.isEmpty() && newRepairCost < middleItem.getRepairCost()) {
-                newRepairCost = middleItem.getRepairCost();
-            }
-            newRepairCost = newRepairCost * 2 + 1; // 每次修复都翻倍并 +1
-            outputItem.setRepairCost(newRepairCost);
-            EnchantmentHelper.setEnchantments(outputEnchantments, outputItem);
-        }
+        // 设置新物品的附魔
+        EnchantmentHelper.setEnchantments(outputEnchantments, outputItem);
 
         // 设置输出
         this.outputInventory.setInventorySlotContents(0, outputItem);
         this.detectAndSendChanges();
     }
 
-    // 在玩家从输出格拿走物品时触发：扣除等级、损坏铁砧、清空输入
+    // 铁砧相对于原版，损坏概率的百分比
+    private final static float AnvilBreakChanceM = 1.5F;
+    // 在玩家从输出格拿走物品时触发：损坏铁砧、清空输入
     private ItemStack onTakeOutput(PlayerEntity player, ItemStack itemStack) {
-
-        // 扣除非创造模式玩家的等级
-        if (!player.abilities.isCreativeMode) player.addExperienceLevel(-this.totalCost.get());
-        this.totalCost.set(0);
 
         // 触发铁砧的随机损坏
         float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(player, itemStack, AnvilContainerRe.this.inputInventory.getStackInSlot(0), AnvilContainerRe.this.inputInventory.getStackInSlot(1));
         this.worldPosCallable.consume((world, blockPos) -> {
             BlockState blockstate = world.getBlockState(blockPos);
-            if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < breakChance) {
+            if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < breakChance * AnvilBreakChanceM) {
                 BlockState blockstate1 = AnvilBlock.damage(blockstate);
                 if (blockstate1 == null) {
                     world.removeBlock(blockPos, false);
@@ -274,7 +233,6 @@ public class AnvilContainerRe extends Container {
         this.worldPosCallable = worldPosCallable;
         this.player = playerInventory.player;
         Constuct(playerInventory);
-        this.trackInt(this.totalCost);
     }
 
     // 接口: 当输入物品改变时触发更新
@@ -283,7 +241,6 @@ public class AnvilContainerRe extends Container {
         if (inventoryIn == this.inputInventory) {
             this.updateRepairOutput();
         }
-
     }
 
     // 接口: 决定玩家是否可以使用该方块
@@ -342,7 +299,6 @@ public class AnvilContainerRe extends Container {
         if (MinecraftForge.EVENT_BUS.post(e)) return false;
         if (e.getOutput().isEmpty()) return true;
         outputSlot.setInventorySlotContents(0, e.getOutput());
-        container.totalCost.set(e.getCost());
         container.materialCost = e.getMaterialCost();
         return false;
     }

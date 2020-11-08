@@ -7,7 +7,6 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
@@ -37,28 +36,6 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         RenderSystem.disableBlend();
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        // 花费等级的文本提示
-        int cost = this.container.totalCost.get();
-        if (cost > 0) {
-            int fontColor = 8453920;
-            ITextComponent itextcomponent;
-            if (cost >= 100 && !this.minecraft.player.abilities.isCreativeMode) {
-                itextcomponent = new TranslationTextComponent("container.repair.expensive");
-                fontColor = 16736352;
-            } else if (!this.container.getSlot(2).getHasStack()) {
-                itextcomponent = null;
-            } else {
-                itextcomponent = new TranslationTextComponent("container.repair.cost", cost);
-                if (!this.container.getSlot(2).canTakeStack(this.playerInventory.player)) {
-                    fontColor = 16736352;
-                }
-            }
-            if (itextcomponent != null) {
-                int xpos = this.xSize - 8 - this.font.getStringPropertyWidth(itextcomponent) - 2;
-                fill(matrixStack, xpos - 2, 67, this.xSize - 8, 79, 1325400064);
-                this.font.func_243246_a(matrixStack, itextcomponent, (float) xpos, 69.0F, fontColor);
-            }
-        }
     }
 
     // 无需修改的方法
