@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.core.item.CraftResultInventoryRe;
 import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.reg.Registry;
@@ -27,7 +28,7 @@ public class GrindstoneContainerRe extends Container {
             GrindstoneContainerRe.this.onCraftMatrixChanged(this);
         }
     };
-    private final IInventory outputInventory = new Inventory(2);
+    private final IInventory outputInventory = new CraftResultInventoryRe(2);
 
     // 构造页面槽位
     private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
