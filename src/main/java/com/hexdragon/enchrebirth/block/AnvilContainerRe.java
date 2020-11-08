@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -8,19 +9,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.AbstractRepairContainer;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.IntReferenceHolder;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +28,6 @@ import java.util.Map;
 public class AnvilContainerRe extends AbstractRepairContainer {
     private static final Logger LOGGER = LogManager.getLogger();
     public int materialCost;
-    private String repairedItemName;
     private final IntReferenceHolder maximumCost = IntReferenceHolder.single();
 
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
@@ -38,7 +35,7 @@ public class AnvilContainerRe extends AbstractRepairContainer {
     }
 
     public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-        super(ContainerType.ANVIL, id, playerInventory, worldPosCallable);
+        super(RegMain.containerAnvil.get(), id, playerInventory, worldPosCallable);
         this.trackInt(this.maximumCost);
     }
 
@@ -111,7 +108,8 @@ public class AnvilContainerRe extends AbstractRepairContainer {
             boolean flag = false;
 
             if (!itemstack2.isEmpty()) {
-                if (!onAnvilChange(this, itemstack, itemstack2, field_234642_c_, repairedItemName, j)) return;
+                if (!onAnvilChange(this, itemstack, itemstack2, field_234642_c_, itemstack.getDisplayName().getString(), j))
+                    return;
                 flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantments(itemstack2).isEmpty();
                 if (itemstack1.isDamageable() && itemstack1.getItem().getIsRepairable(itemstack, itemstack2)) {
                     int l2 = Math.min(itemstack1.getDamage(), itemstack1.getMaxDamage() / 4);
@@ -218,17 +216,6 @@ public class AnvilContainerRe extends AbstractRepairContainer {
                 }
             }
 
-            if (StringUtils.isBlank(this.repairedItemName)) {
-                if (itemstack.hasDisplayName()) {
-                    k = 1;
-                    i += k;
-                    itemstack1.clearCustomName();
-                }
-            } else if (!this.repairedItemName.equals(itemstack.getDisplayName().getString())) {
-                k = 1;
-                i += k;
-                itemstack1.setDisplayName(new StringTextComponent(this.repairedItemName));
-            }
             if (flag && !itemstack1.isBookEnchantable(itemstack2)) itemstack1 = ItemStack.EMPTY;
 
             this.maximumCost.set(j + i);
@@ -277,23 +264,6 @@ public class AnvilContainerRe extends AbstractRepairContainer {
 
     public static int getNewRepairCost(int oldRepairCost) {
         return oldRepairCost * 2 + 1;
-    }
-
-    /**
-     * used by the Anvil GUI to update the Item Name being typed by the player
-     */
-    public void updateItemName(String newName) {
-        this.repairedItemName = newName;
-        if (this.getSlot(2).getHasStack()) {
-            ItemStack itemstack = this.getSlot(2).getStack();
-            if (StringUtils.isBlank(newName)) {
-                itemstack.clearCustomName();
-            } else {
-                itemstack.setDisplayName(new StringTextComponent(this.repairedItemName));
-            }
-        }
-
-        this.updateRepairOutput();
     }
 
     /**
