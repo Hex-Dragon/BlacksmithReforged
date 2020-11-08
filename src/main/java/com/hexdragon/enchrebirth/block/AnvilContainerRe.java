@@ -7,8 +7,12 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.AbstractRepairContainer;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -23,21 +27,141 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
-public class AnvilContainerRe extends AbstractRepairContainer {
-    private static final Logger LOGGER = LogManager.getLogger();
-    public int materialCost;
-    private final IntReferenceHolder maximumCost = IntReferenceHolder.single();
+public class AnvilContainerRe extends Container {
+    protected final CraftResultInventory field_234642_c_ = new CraftResultInventory();
+    protected final IInventory field_234643_d_ = new Inventory(2) {
+        /**
+         * For tile entities, ensures the chunk containing the tile entity is saved to disk later - the game won't think
+         * it hasn't changed and skip it.
+         */
+        public void markDirty() {
+            super.markDirty();
+            AnvilContainerRe.this.onCraftMatrixChanged(this);
+        }
+    };
+    protected final IWorldPosCallable field_234644_e_;
+    protected final PlayerEntity field_234645_f_;
+
+    public AnvilContainerRe(@Nullable ContainerType<?> p_i231587_1_, int p_i231587_2_, PlayerInventory p_i231587_3_, IWorldPosCallable p_i231587_4_) {
+        super(p_i231587_1_, p_i231587_2_);
+        this.field_234644_e_ = p_i231587_4_;
+        this.field_234645_f_ = p_i231587_3_.player;
+        this.addSlot(new Slot(this.field_234643_d_, 0, 27, 47));
+        this.addSlot(new Slot(this.field_234643_d_, 1, 76, 47));
+        this.addSlot(new Slot(this.field_234642_c_, 2, 134, 47) {
+            /**
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
+             */
+            public boolean isItemValid(ItemStack stack) {
+                return false;
+            }
+
+            /**
+             * Return whether this slot's stack can be taken from this slot.
+             */
+            public boolean canTakeStack(PlayerEntity playerIn) {
+                return AnvilContainerRe.this.func_230303_b_(playerIn, this.getHasStack());
+            }
+
+            public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
+                return AnvilContainerRe.this.func_230301_a_(thePlayer, stack);
+            }
+        });
+
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                this.addSlot(new Slot(p_i231587_3_, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            }
+        }
+
+        for (int k = 0; k < 9; ++k) {
+            this.addSlot(new Slot(p_i231587_3_, k, 8 + k * 18, 152)); // 142
+        }
+
+    }
 
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
         this(id, playerInventory, IWorldPosCallable.DUMMY);
     }
 
     public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-        super(RegMain.containerAnvil.get(), id, playerInventory, worldPosCallable);
+        this(RegMain.containerAnvil.get(), id, playerInventory, worldPosCallable);
         this.trackInt(this.maximumCost);
     }
+
+    /**
+     * Callback for when the crafting matrix is changed.
+     */
+    public void onCraftMatrixChanged(IInventory inventoryIn) {
+        super.onCraftMatrixChanged(inventoryIn);
+        if (inventoryIn == this.field_234643_d_) {
+            this.updateRepairOutput();
+        }
+
+    }
+
+    /**
+     * Called when the container is closed.
+     */
+    public void onContainerClosed(PlayerEntity playerIn) {
+        super.onContainerClosed(playerIn);
+        this.field_234644_e_.consume((p_234647_2_, p_234647_3_) -> this.clearContainer(playerIn, p_234647_2_, this.field_234643_d_));
+    }
+
+    /**
+     * Determines whether supplied player can use this container
+     */
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        return this.field_234644_e_.applyOrElse((p_234646_2_, p_234646_3_) -> this.func_230302_a_(p_234646_2_.getBlockState(p_234646_3_)) && playerIn.getDistanceSq((double) p_234646_3_.getX() + 0.5D, (double) p_234646_3_.getY() + 0.5D, (double) p_234646_3_.getZ() + 0.5D) <= 64.0D, true);
+    }
+
+    /**
+     * Handle when the stack in slot {@code index} is shift-clicked. Normally this moves the stack between the player
+     * inventory and the other inventory(s).
+     */
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.inventorySlots.get(index);
+        if (slot != null && slot.getHasStack()) {
+            ItemStack itemstack1 = slot.getStack();
+            itemstack = itemstack1.copy();
+            if (index == 2) {
+                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
+                    return ItemStack.EMPTY;
+                }
+
+                slot.onSlotChange(itemstack1, itemstack);
+            } else if (index != 0 && index != 1) {
+                if (index < 39) {
+                    if (!this.mergeItemStack(itemstack1, 0, 2, false)) {
+                        return ItemStack.EMPTY;
+                    }
+                }
+            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
+                return ItemStack.EMPTY;
+            }
+
+            if (itemstack1.isEmpty()) {
+                slot.putStack(ItemStack.EMPTY);
+            } else {
+                slot.onSlotChanged();
+            }
+
+            if (itemstack1.getCount() == itemstack.getCount()) {
+                return ItemStack.EMPTY;
+            }
+
+            slot.onTake(playerIn, itemstack1);
+        }
+
+        return itemstack;
+    }
+    private static final Logger LOGGER = LogManager.getLogger();
+    public int materialCost;
+    private final IntReferenceHolder maximumCost = IntReferenceHolder.single();
 
     protected boolean func_230302_a_(BlockState p_230302_1_) {
         return p_230302_1_.isIn(BlockTags.ANVIL);
@@ -223,10 +347,6 @@ public class AnvilContainerRe extends AbstractRepairContainer {
                 itemstack1 = ItemStack.EMPTY;
             }
 
-            if (k == i && k > 0 && this.maximumCost.get() >= 40) {
-                this.maximumCost.set(39);
-            }
-
             if (this.maximumCost.get() >= 40 && !this.field_234645_f_.abilities.isCreativeMode) {
                 itemstack1 = ItemStack.EMPTY;
             }
@@ -237,9 +357,7 @@ public class AnvilContainerRe extends AbstractRepairContainer {
                     k2 = itemstack2.getRepairCost();
                 }
 
-                if (k != i || k == 0) {
-                    k2 = getNewRepairCost(k2);
-                }
+                k2 = getNewRepairCost(k2);
 
                 itemstack1.setRepairCost(k2);
                 EnchantmentHelper.setEnchantments(map, itemstack1);
