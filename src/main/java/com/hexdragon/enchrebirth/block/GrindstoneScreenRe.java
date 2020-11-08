@@ -1,6 +1,7 @@
 package com.hexdragon.enchrebirth.block;
 
 import com.hexdragon.core.gui.ContainerScreenRe;
+import com.hexdragon.enchrebirth.EnchRebirth;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -11,11 +12,12 @@ import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
 public class GrindstoneScreenRe extends ContainerScreenRe<GrindstoneContainerRe> {
-    private static final ResourceLocation GRINDSTONE_GUI_TEXTURES = new ResourceLocation("textures/gui/container/grindstone.png");
+    private static final ResourceLocation GRINDSTONE_GUI_TEXTURES = new ResourceLocation(EnchRebirth.MODID, "textures/gui/container/grindstone.png");
 
     public GrindstoneScreenRe(GrindstoneContainerRe container, PlayerInventory playerInventory, ITextComponent textComponent) {
         super(container, playerInventory, textComponent);
         this.showPlayerInventoryTitle = false;
+        this.titleX = 61; this.titleY = 12; this.ySize = 150;
     }
 
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
@@ -33,7 +35,7 @@ public class GrindstoneScreenRe extends ContainerScreenRe<GrindstoneContainerRe>
         this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
         // 显示无法合成的红叉：输入、输出仅一方为空
         if (this.container.getSlot(0).getHasStack() ^ (this.container.getSlot(1).getHasStack() || this.container.getSlot(2).getHasStack())) {
-            this.blit(matrixStack, i + 92, j + 31, this.xSize, 0, 28, 21);
+            this.blit(matrixStack, i + 85, j + 26, this.xSize, 0, 28, 21);
         }
     }
 }

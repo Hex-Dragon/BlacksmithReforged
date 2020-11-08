@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -32,28 +31,30 @@ public class GrindstoneContainerRe extends Container {
 
     // 构造页面槽位
     private void Constuct(int windowIdIn, PlayerInventory playerInventoryIn, final IWorldPosCallable worldPosCallableIn) {
-        this.addSlot(new Slot(this.inputInventory, 0, 49, 19) {
+        this.addSlot(new Slot(this.inputInventory, 0, 62, 28) {
             // 检查物品是否能输入：没有没拿走的输出，且接受输入
             public boolean isItemValid(ItemStack stack) {
                 return !(inputInventory.isEmpty() && !outputInventory.isEmpty()) && stack.getCount() == 1 && stack.isDamageable();
             }
         });
-        this.addSlot(new Slot(this.outputInventory, 0, 129, 34) {
+        this.addSlot(new Slot(this.outputInventory, 0, 120, 28) {
             // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
+
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
                 GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return stack;
             }
         });
-        this.addSlot(new Slot(this.outputInventory, 1, 129 + 18, 34) {
+        this.addSlot(new Slot(this.outputInventory, 1, 120 + 18, 28) {
             // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
                 return false;
             }
+
             // 从输出格拿走物品时清空输入格
             public ItemStack onTake(PlayerEntity thePlayer, ItemStack stack) {
                 GrindstoneContainerRe.this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -62,7 +63,7 @@ public class GrindstoneContainerRe extends Container {
         });
 
         // 增加物品栏与快捷栏槽位
-        int yPositionStart = 84;
+        int yPositionStart = 68;
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(playerInventoryIn, j + i * 9 + 9, 8 + j * 18, yPositionStart + i * 18));
@@ -107,6 +108,7 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
+    // TODO : 打开砂轮物品栏关闭游戏，会在重新上线后掉落全部物品
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
     private ItemStack prepareNewItem(ItemStack stack) {
         ItemStack itemstack = stack.copy();
@@ -119,11 +121,8 @@ public class GrindstoneContainerRe extends Container {
         itemstack.removeChildTag("Enchantments");
         Map<Enchantment, Integer> map = EnchantmentHelperRe.getCurseEnchantments(stack);
         EnchantmentHelper.setEnchantments(map, itemstack);
-        // 根据附魔数重置修复消耗
+        // 重置修复消耗
         itemstack.setRepairCost(0);
-        for (int i = 0; i < map.size(); ++i) {
-            itemstack.setRepairCost(RepairContainer.getNewRepairCost(itemstack.getRepairCost()));
-        }
         return itemstack;
     }
 
