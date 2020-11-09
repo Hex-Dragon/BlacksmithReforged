@@ -156,18 +156,18 @@ public class AnvilContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // 铁砧相对于原版，损坏概率的百分比
-    // 对于原版：“平均每个铁砧能用 25 次，相当于每用一次铁砧就消耗了 1.24 个用于合成铁砧的铁锭”
-    // 考虑到铁砧现在没有等级消耗，略微增加损耗速率是比较平衡的
-    private final static float AnvilBreakChanceM = 1.5F;
     // 在玩家从输出格拿走物品时触发：损坏铁砧、清空输入
     private ItemStack onTakeOutput(PlayerEntity player, ItemStack itemStack) {
 
         // 触发铁砧的随机损坏
+        // 对于原版：“平均每个铁砧能用 25 次，相当于每用一次铁砧就消耗了 1.24 个用于合成铁砧的铁锭”
         float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(player, itemStack, AnvilContainerRe.this.inputInventory.getStackInSlot(0), AnvilContainerRe.this.inputInventory.getStackInSlot(1));
         this.worldPosCallable.consume((world, blockPos) -> {
             BlockState blockstate = world.getBlockState(blockPos);
-            if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < breakChance * AnvilBreakChanceM) {
+            // 考虑到铁砧现在没有等级消耗，略微增加损耗速率是比较平衡的
+            // 下界合金砧的耐久为普通铁砧的 15 倍，平均能用 250 次
+            float newBreakChance = breakChance * ((blockstate.get(RegMain.blockStateMaterial) == 0) ? 1.5F : 0.1F);
+            if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < newBreakChance) {
                 BlockState blockstate1 = AnvilBlock.damage(blockstate);
                 if (blockstate1 == null) {
                     world.removeBlock(blockPos, false);
