@@ -25,7 +25,9 @@ public class RegClient {
     @SubscribeEvent
     public static void onClientEvent(FMLClientSetupEvent event) {
         // 注册 Renderer
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedAnvil.get(), (AnvilRenderer::new));
     }
 
 }

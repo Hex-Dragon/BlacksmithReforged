@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.LockableLootTileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
@@ -20,9 +21,18 @@ import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
 public class AnvilTileEntity extends LockableLootTileEntity {
-    public AnvilTileEntity() {
-        super(RegMain.tileEntityAnvil.get());
+    public static class PerfectAnvilTileEntity extends AnvilTileEntity {
+        public PerfectAnvilTileEntity() { super(RegMain.tileEntityPerfectAnvil.get()); }
     }
+
+    public static class ChippedAnvilTileEntity extends AnvilTileEntity {
+        public ChippedAnvilTileEntity() { super(RegMain.tileEntityChippedAnvil.get()); }
+    }
+
+    public static class DamagedAnvilTileEntity extends AnvilTileEntity {
+        public DamagedAnvilTileEntity() { super(RegMain.tileEntityDamagedAnvil.get()); }
+    }
+    public AnvilTileEntity(TileEntityType<?> typeIn) { super(typeIn); }
 
     private Container container = null;
     public void markDirty() {
@@ -93,5 +103,6 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     }
 
     // TODO : 检查红石信号输出
+    // TODO : 需要重构
 
 }

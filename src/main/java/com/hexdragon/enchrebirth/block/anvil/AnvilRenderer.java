@@ -45,5 +45,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
             itemRenderer.renderItem(stackRight, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
             matrixStackIn.pop();
         }
+
     }
 }

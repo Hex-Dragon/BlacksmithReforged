@@ -3,6 +3,7 @@ package com.hexdragon.enchrebirth.mixin.block;
 import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -33,23 +34,31 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         return true;
     }
     @Override public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new AnvilTileEntity();
+        if (state.isIn(Blocks.ANVIL)) {
+            return new AnvilTileEntity.PerfectAnvilTileEntity();
+        } else if (state.isIn(Blocks.CHIPPED_ANVIL)) {
+            return new AnvilTileEntity.ChippedAnvilTileEntity();
+        } else {
+            return new AnvilTileEntity.DamagedAnvilTileEntity();
+        }
     }
 
+    // 将同步事件传递到客户端
     @Override public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
         super.eventReceived(state, worldIn, pos, id, param);
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity != null && tileentity.receiveClientEvent(id, param);
     }
 
+    // 当破坏时掉落内容物
     @Override public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.isIn(newState.getBlock())) {
             TileEntity tileentity = worldIn.getTileEntity(pos);
             if (tileentity instanceof AnvilTileEntity) {
                 InventoryHelper.dropItems(worldIn, pos, ((AnvilTileEntity) tileentity).getItems());
             }
-
             super.onReplaced(state, worldIn, pos, newState, isMoving);
         }
     }
+
 }
