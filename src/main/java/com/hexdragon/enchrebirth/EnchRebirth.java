@@ -12,5 +12,6 @@ public class EnchRebirth {
     public EnchRebirth() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         RegMain.CONTAINERS.register(modEventBus);
+        RegMain.TILE_ENTITIES.register(modEventBus);
     }
 }
