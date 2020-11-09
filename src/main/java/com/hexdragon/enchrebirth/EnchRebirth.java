@@ -9,6 +9,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class EnchRebirth {
     public EnchRebirth() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        RegMain.ITEMS.register(modEventBus);
         RegMain.CONTAINERS.register(modEventBus);
         RegMain.TILE_ENTITIES.register(modEventBus);
     }

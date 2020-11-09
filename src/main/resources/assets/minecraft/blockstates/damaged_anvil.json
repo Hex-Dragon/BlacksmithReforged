@@ -16,18 +16,18 @@
       "y": 90
     },
     "facing=east,material=1": {
-      "model": "enchrebirth:block/netherite_damaged_anvil",
+      "model": "enchrebirth:block/damaged_netherite_anvil",
       "y": 270
     },
     "facing=north,material=1": {
-      "model": "enchrebirth:block/netherite_damaged_anvil",
+      "model": "enchrebirth:block/damaged_netherite_anvil",
       "y": 180
     },
     "facing=south,material=1": {
-      "model": "enchrebirth:block/netherite_damaged_anvil"
+      "model": "enchrebirth:block/damaged_netherite_anvil"
     },
     "facing=west,material=1": {
-      "model": "enchrebirth:block/netherite_damaged_anvil",
+      "model": "enchrebirth:block/damaged_netherite_anvil",
       "y": 90
     }
   }
