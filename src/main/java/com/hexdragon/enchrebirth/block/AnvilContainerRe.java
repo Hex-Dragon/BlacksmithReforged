@@ -3,7 +3,6 @@ package com.hexdragon.enchrebirth.block;
 import com.hexdragon.core.item.CraftInputInventory;
 import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
-import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
@@ -31,26 +30,21 @@ public class AnvilContainerRe extends Container {
     private final PlayerEntity player;
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
         this(id, playerInventory, IWorldPosCallable.DUMMY);
-        this.inputInventory.container = this;
     }
     public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
         super(RegMain.containerAnvil.get(), id);
         this.worldPosCallable = worldPosCallable;
         this.player = playerInventory.player;
-        worldPosCallable.consume((world, blockPos) -> {
-            this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory();
-            if (this.inputInventory == null) this.inputInventory = new CraftInputInventory(2);
-        });
+        worldPosCallable.consume((world, blockPos) -> this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).inventory); // 与 NBT 中的物品栏同步
         Constuct(playerInventory);
     }
 
     // 输入与输出物品槽
-    public CraftInputInventory inputInventory;
+    public CraftInputInventory inputInventory = new CraftInputInventory(2);
     public final CraftResultInventory outputInventory = new CraftResultInventory();
 
     // 构造页面槽位
     private void Constuct(PlayerInventory playerInventory) {
-        Main.LOGGER.warn("CONSTUCT");
         this.addSlot(new Slot(this.inputInventory, 0, 62, 28));
         this.addSlot(new Slot(this.inputInventory, 1, 80, 28));
         this.addSlot(new Slot(this.outputInventory, 2, 138, 28) {

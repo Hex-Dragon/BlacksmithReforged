@@ -1,7 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
 import com.hexdragon.core.item.CraftInputInventory;
-import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import com.sun.istack.internal.Nullable;
 import net.minecraft.block.BlockState;
@@ -16,6 +15,7 @@ import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+// 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
 public class AnvilTileEntity extends TileEntity implements INamedContainerProvider {
     public AnvilTileEntity() {
         super(RegMain.tileEntityAnvil.get());
@@ -24,33 +24,25 @@ public class AnvilTileEntity extends TileEntity implements INamedContainerProvid
         return new TranslationTextComponent("block.minecraft.anvil");
     }
 
-    public final CraftInputInventory inputInventory = new CraftInputInventory(2);
-
+    // 内建物品栏
+    public final CraftInputInventory inventory = new CraftInputInventory(2);
     @Nullable @Override public Container createMenu(int sycID, PlayerInventory inventory, PlayerEntity player) {
-        Main.LOGGER.warn("CREATE MENU");
+        // 与 Container 同步物品栏
         AnvilContainerRe container = new AnvilContainerRe(sycID, inventory, IWorldPosCallable.of(this.world, this.pos));
-        inputInventory.container = container;
+        this.inventory.container = container;
         return container;
     }
 
+    // 将物品栏 NBT 化
     @Override public void read(BlockState state, CompoundNBT compound) {
-        Main.LOGGER.warn("READ");
-        inputInventory.addItem(ItemStack.read(compound.getCompound("item1")));
-        inputInventory.addItem(ItemStack.read(compound.getCompound("item2")));
+        inventory.setInventorySlotContents(0, ItemStack.read(compound.getCompound("ItemLeft")));
+        inventory.setInventorySlotContents(1, ItemStack.read(compound.getCompound("ItemRight")));
         super.read(null, compound);
     }
-
     @Override public CompoundNBT write(CompoundNBT compound) {
-        Main.LOGGER.warn("WRITE");
-        ItemStack itemStack1 = inputInventory.getStackInSlot(0).copy();
-        compound.put("item1", itemStack1.serializeNBT());
-        ItemStack itemStack2 = inputInventory.getStackInSlot(1).copy();
-        compound.put("item2", itemStack2.serializeNBT());
+        compound.put("ItemLeft", inventory.getStackInSlot(0).serializeNBT());
+        compound.put("ItemRight", inventory.getStackInSlot(1).serializeNBT());
         return super.write(compound);
-    }
-
-    public CraftInputInventory getInventory() {
-        return inputInventory;
     }
 
 }
