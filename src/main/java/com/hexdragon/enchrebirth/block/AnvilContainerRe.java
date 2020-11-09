@@ -26,7 +26,7 @@ import java.util.Map;
 public class AnvilContainerRe extends Container {
 
     // 输入与输出物品槽
-    private final IInventory inputInventory = new Inventory(2) {
+    private final Inventory inputInventory = new Inventory(2) {
         public void markDirty() {
             super.markDirty();
             AnvilContainerRe.this.onCraftMatrixChanged(this);
@@ -195,6 +195,7 @@ public class AnvilContainerRe extends Container {
         super(RegMain.containerAnvil.get(), id);
         this.worldPosCallable = worldPosCallable;
         this.player = playerInventory.player;
+        // worldPosCallable.consume((world,  blockPos) -> this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory());
         Constuct(playerInventory);
     }
 

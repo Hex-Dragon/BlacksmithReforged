@@ -16,13 +16,9 @@ import net.minecraft.item.Items;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
 public class AnvilRenderer extends TileEntityRenderer<AnvilTileEntity> {
+    public AnvilRenderer(TileEntityRendererDispatcher rendererDispatcherIn) { super(rendererDispatcherIn); }
 
-    public AnvilRenderer(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-    }
-
-    @Override
-    public void render(AnvilTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
+    @Override public void render(AnvilTileEntity tileEntityIn, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         matrixStackIn.push();
         matrixStackIn.translate(1, 0, 0);
         BlockRendererDispatcher blockRenderer = Minecraft.getInstance().getBlockRendererDispatcher();
