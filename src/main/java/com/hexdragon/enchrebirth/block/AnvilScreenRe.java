@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth.block;
 
-import com.hexdragon.enchrebirth.EnchRebirth;
+import com.hexdragon.enchrebirth.Main;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 @OnlyIn(Dist.CLIENT)
 public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
-    private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation(EnchRebirth.MODID, "textures/gui/container/anvil.png");
+    private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation(Main.MODID, "textures/gui/container/anvil.png");
 
     public AnvilScreenRe(AnvilContainerRe container, PlayerInventory playerInventory, ITextComponent title) {
         super(container, playerInventory, title);

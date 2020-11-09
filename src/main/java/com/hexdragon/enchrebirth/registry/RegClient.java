@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth.registry;
 
-import com.hexdragon.enchrebirth.EnchRebirth;
+import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.block.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.AnvilScreenRe;
 import com.hexdragon.enchrebirth.block.GrindstoneScreenRe;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = EnchRebirth.MODID, bus = Mod.EventBusSubscriber.Bus.MOD) @OnlyIn(Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = Main.MODID, bus = Mod.EventBusSubscriber.Bus.MOD) @OnlyIn(Dist.CLIENT)
 public class RegClient {
 
     @SubscribeEvent

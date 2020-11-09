@@ -1,7 +1,9 @@
 package com.hexdragon.enchrebirth.block;
 
+import com.hexdragon.core.item.CraftInputInventory;
 import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
+import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
@@ -11,7 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -25,17 +26,31 @@ import java.util.Map;
 
 public class AnvilContainerRe extends Container {
 
+    // 构造函数
+    private final IWorldPosCallable worldPosCallable;
+    private final PlayerEntity player;
+    public AnvilContainerRe(int id, PlayerInventory playerInventory) {
+        this(id, playerInventory, IWorldPosCallable.DUMMY);
+        this.inputInventory.container = this;
+        Main.LOGGER.warn("NEW2");
+    }
+    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
+        super(RegMain.containerAnvil.get(), id);
+        Main.LOGGER.warn("NEW1");
+        this.worldPosCallable = worldPosCallable;
+        this.player = playerInventory.player;
+        worldPosCallable.consume((world, blockPos) -> this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory());
+        if (this.inputInventory == null) this.inputInventory = new CraftInputInventory(2); // TODO
+        Constuct(playerInventory);
+    }
+
     // 输入与输出物品槽
-    private final Inventory inputInventory = new Inventory(2) {
-        public void markDirty() {
-            super.markDirty();
-            AnvilContainerRe.this.onCraftMatrixChanged(this);
-        }
-    };
-    private final CraftResultInventory outputInventory = new CraftResultInventory();
+    public CraftInputInventory inputInventory;
+    public final CraftResultInventory outputInventory = new CraftResultInventory();
 
     // 构造页面槽位
     private void Constuct(PlayerInventory playerInventory) {
+        Main.LOGGER.warn("CONSTUCT");
         this.addSlot(new Slot(this.inputInventory, 0, 62, 28));
         this.addSlot(new Slot(this.inputInventory, 1, 80, 28));
         this.addSlot(new Slot(this.outputInventory, 2, 138, 28) {
@@ -184,20 +199,6 @@ public class AnvilContainerRe extends Container {
      *  以下方法直接使用原本的代码，不需要进行修改
      * --------------------------------------------------------------
      */
-
-    // 构造函数
-    private final IWorldPosCallable worldPosCallable;
-    private final PlayerEntity player;
-    public AnvilContainerRe(int id, PlayerInventory playerInventory) {
-        this(id, playerInventory, IWorldPosCallable.DUMMY);
-    }
-    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
-        super(RegMain.containerAnvil.get(), id);
-        this.worldPosCallable = worldPosCallable;
-        this.player = playerInventory.player;
-        // worldPosCallable.consume((world,  blockPos) -> this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory());
-        Constuct(playerInventory);
-    }
 
     // 接口: 当输入物品改变时触发更新
     public void onCraftMatrixChanged(IInventory inventoryIn) {
