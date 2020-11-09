@@ -1,10 +1,12 @@
 package com.hexdragon.enchrebirth.mixin.block;
 
 import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
+import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.*;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -71,6 +74,12 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
     private void getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context, CallbackInfoReturnable<VoxelShape> cir) {
         cir.setReturnValue(state.get(FACING).getAxis() == Direction.Axis.X ? X_AXIS_AABB : Z_AXIS_AABB);
         cir.cancel();
+    }
+
+    // 添加 MATERIAL BlockState
+    @Inject(method = "fillStateContainer", at = @At(value = "HEAD"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder, CallbackInfo cir) {
+        builder.add(RegMain.MATERIAL);
     }
 
 }

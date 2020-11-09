@@ -1,0 +1,6 @@
+{
+  "parent": "enchrebirth:block/template_netherite_anvil",
+  "textures": {
+    "top": "enchrebirth:block/netherite_damaged_anvil_top"
+  }
+}
