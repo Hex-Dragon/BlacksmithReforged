@@ -1,4 +1,4 @@
-package com.hexdragon.enchrebirth.block;
+package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.enchrebirth.Main;
 import com.mojang.blaze3d.matrix.MatrixStack;

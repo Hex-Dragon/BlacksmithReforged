@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth.mixin.block;
 
-import com.hexdragon.enchrebirth.block.AnvilTileEntity;
+import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;

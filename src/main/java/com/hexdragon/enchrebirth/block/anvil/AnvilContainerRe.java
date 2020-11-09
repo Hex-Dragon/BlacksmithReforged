@@ -1,4 +1,4 @@
-package com.hexdragon.enchrebirth.block;
+package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.core.item.CraftInputInventory;
 import com.hexdragon.core.item.EnchantmentHelperRe;
