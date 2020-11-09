@@ -1,7 +1,9 @@
 package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.enchrebirth.registry.RegMain;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
@@ -29,11 +31,9 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     public static class PerfectAnvilTileEntity extends AnvilTileEntity {
         public PerfectAnvilTileEntity() { super(RegMain.tileEntityPerfectAnvil.get()); }
     }
-
     public static class ChippedAnvilTileEntity extends AnvilTileEntity {
         public ChippedAnvilTileEntity() { super(RegMain.tileEntityChippedAnvil.get()); }
     }
-
     public static class DamagedAnvilTileEntity extends AnvilTileEntity {
         public DamagedAnvilTileEntity() { super(RegMain.tileEntityDamagedAnvil.get()); }
     }
@@ -47,6 +47,10 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     }
     public void setItems(NonNullList<ItemStack> itemsIn) {
         this.inventory = itemsIn;
+    }
+    public boolean isItemValidForSlot(int index, ItemStack stack) {
+        // 只允许将物品放入（这个方法只影响自动化，从 GUI 放入需要在 Slot 里写）
+        return Block.getBlockFromItem(stack.getItem()) == Blocks.AIR;
     }
 
     // NBT 交互

@@ -4,7 +4,9 @@ import com.hexdragon.core.item.EnchantmentHelperRe;
 import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,7 +39,7 @@ public class AnvilContainerRe extends Container {
         this.player = playerInventory.player;
         worldPosCallable.consume((world, blockPos) -> this.inputInventory = (AnvilTileEntity) world.getTileEntity(blockPos)); // 与 NBT 中的物品栏同步
         Constuct(playerInventory);
-        onCraftMatrixChanged(inputInventory);
+        onCraftMatrixChanged(inputInventory); // 初始化输出
     }
 
     // 输入与输出物品槽
@@ -46,8 +48,18 @@ public class AnvilContainerRe extends Container {
 
     // 构造页面槽位
     private void Constuct(PlayerInventory playerInventory) {
-        this.addSlot(new Slot(this.inputInventory, 0, 62, 28));
-        this.addSlot(new Slot(this.inputInventory, 1, 80, 28));
+        this.addSlot(new Slot(this.inputInventory, 0, 62, 28) {
+            public boolean isItemValid(ItemStack stack) {
+                // 只允许将物品放入，阻止方块
+                return Block.getBlockFromItem(stack.getItem()) == Blocks.AIR;
+            }
+        });
+        this.addSlot(new Slot(this.inputInventory, 1, 80, 28) {
+            public boolean isItemValid(ItemStack stack) {
+                // 只允许将物品放入，阻止方块
+                return Block.getBlockFromItem(stack.getItem()) == Blocks.AIR;
+            }
+        });
         this.addSlot(new Slot(this.outputInventory, 2, 138, 28) {
             // 禁止将物品放在输出格
             public boolean isItemValid(ItemStack stack) {
