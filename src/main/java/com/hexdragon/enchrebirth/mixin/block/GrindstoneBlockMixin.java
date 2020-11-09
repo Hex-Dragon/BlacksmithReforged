@@ -25,7 +25,7 @@ public abstract class GrindstoneBlockMixin extends HorizontalFaceBlock {
     private void getContainer(BlockState state, World worldIn, BlockPos pos, CallbackInfoReturnable<INamedContainerProvider> cir) {
         cir.setReturnValue(new SimpleNamedContainerProvider(
                 (id, inventory, player) -> new GrindstoneContainerRe(id, inventory, IWorldPosCallable.of(worldIn, pos)),
-                new TranslationTextComponent("block.minecraft.grindstone")));
+                new TranslationTextComponent("container.grindstone.title")));
         cir.cancel();
     }
 

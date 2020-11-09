@@ -23,9 +23,7 @@ import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
 public class AnvilTileEntity extends LockableLootTileEntity {
-    protected ITextComponent getDefaultName() {
-        return new TranslationTextComponent("block.minecraft.anvil");
-    }
+    protected ITextComponent getDefaultName() {return new TranslationTextComponent("container.anvil.title");}
 
     // 构造函数，为了支持不同损坏度的铁砧复读了三次
     public static class PerfectAnvilTileEntity extends AnvilTileEntity {
@@ -82,5 +80,8 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         this.container = container;
         return container;
     }
+
+    // TODO : 让漏斗只能从上方注入物品（需要使用 Capability）
+    // TODO : 让铁砧可以根据物品栏输出红石信号
 
 }
