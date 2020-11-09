@@ -37,6 +37,6 @@ public class RegMain {
     public static RegistryObject<TileEntityType<AnvilTileEntity.DamagedAnvilTileEntity>> tileEntityDamagedAnvil = TILE_ENTITIES.register("damaged_anvil_tileentity", () -> TileEntityType.Builder.create(AnvilTileEntity.DamagedAnvilTileEntity::new, Blocks.DAMAGED_ANVIL).build(null));
 
     // BlockState
-    public static final IntegerProperty MATERIAL = IntegerProperty.create("material", 0, 1);
+    public static final IntegerProperty blockStateMaterial = IntegerProperty.create("material", 0, 1);
 
 }

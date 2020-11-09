@@ -79,7 +79,7 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
     // 添加 MATERIAL BlockState
     @Inject(method = "fillStateContainer", at = @At(value = "HEAD"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder, CallbackInfo cir) {
-        builder.add(RegMain.MATERIAL);
+        builder.add(RegMain.blockStateMaterial);
     }
 
 }
