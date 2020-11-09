@@ -7,12 +7,14 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +28,7 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     public void markDirty() {
         super.markDirty();
         if (container != null) container.onCraftMatrixChanged(this);
-        this.getWorld().notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), 3);
+        world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
     }
 
     public NonNullList<ItemStack> contents = NonNullList.withSize(2, ItemStack.EMPTY);
@@ -72,7 +74,6 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         AnvilContainerRe container = new AnvilContainerRe(id, player, IWorldPosCallable.of(this.world, this.pos));
         this.container = container;
         return container;
-        // return ChestContainer.createGeneric9X3(id, player, this);
     }
 
     /**
@@ -81,11 +82,14 @@ public class AnvilTileEntity extends LockableLootTileEntity {
      */
     @Nullable
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.pos, 0, this.getUpdateTag());
+        return new SUpdateTileEntityPacket(pos, 0, getUpdateTag());
     }
-
+    @Override
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        handleUpdateTag(null, pkt.getNbtCompound());
+    }
     public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+        return write(new CompoundNBT());
     }
 
     // TODO : 检查红石信号输出

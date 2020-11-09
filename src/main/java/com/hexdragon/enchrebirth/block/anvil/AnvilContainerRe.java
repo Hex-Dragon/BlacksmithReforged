@@ -99,7 +99,7 @@ public class AnvilContainerRe extends Container {
             // 使用原材料修复物品
 
             // 获取每个材料修复的耐久度
-            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * 0.95F));
+            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem)));
             if (decrDamagePerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
@@ -109,7 +109,7 @@ public class AnvilContainerRe extends Container {
             int materialCost;
             for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
                 outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
-                decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * 0.95F));
+                decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem)));
             }
             this.materialCost = materialCost;
 
