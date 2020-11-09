@@ -7,11 +7,14 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
 public class AnvilTileEntity extends LockableLootTileEntity {
@@ -19,10 +22,11 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         super(RegMain.tileEntityAnvil.get());
     }
 
-    public Container container = null;
+    private Container container = null;
     public void markDirty() {
         super.markDirty();
         if (container != null) container.onCraftMatrixChanged(this);
+        this.getWorld().notifyBlockUpdate(this.getPos(), this.getBlockState(), this.getBlockState(), 3);
     }
 
     public NonNullList<ItemStack> contents = NonNullList.withSize(2, ItemStack.EMPTY);
@@ -52,11 +56,11 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         return 2;
     }
 
-    protected NonNullList<ItemStack> getItems() {
+    public NonNullList<ItemStack> getItems() {
         return this.contents;
     }
 
-    protected void setItems(NonNullList<ItemStack> itemsIn) {
+    public void setItems(NonNullList<ItemStack> itemsIn) {
         this.contents = itemsIn;
     }
 
@@ -71,33 +75,19 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         // return ChestContainer.createGeneric9X3(id, player, this);
     }
 
+    /**
+     * Retrieves packet to send to the client whenever this Tile Entity is resynced via World.notifyBlockUpdate. For
+     * modded TE's, this packet comes back to you clientside in {@link #onDataPacket}
+     */
+    @Nullable
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        return new SUpdateTileEntityPacket(this.pos, 0, this.getUpdateTag());
+    }
+
+    public CompoundNBT getUpdateTag() {
+        return this.write(new CompoundNBT());
+    }
 
     // TODO : 检查红石信号输出
-
-
-//    @Override public ITextComponent getDisplayName() {
-//        return new TranslationTextComponent("block.minecraft.anvil");
-//    }
-//
-//    // 内建物品栏
-//    public final CraftInputInventory inventory = new CraftInputInventory(2);
-//    @Nullable @Override public Container createMenu(int sycID, PlayerInventory inventory, PlayerEntity player) {
-//        // 与 Container 同步物品栏
-//        AnvilContainerRe container = new AnvilContainerRe(sycID, inventory, IWorldPosCallable.of(this.world, this.pos));
-//        this.inventory.container = container;
-//        return container;
-//    }
-//
-//    // 将物品栏 NBT 化
-//    @Override public void read(BlockState state, CompoundNBT compound) {
-//        inventory.setInventorySlotContents(0, ItemStack.read(compound.getCompound("ItemLeft")));
-//        inventory.setInventorySlotContents(1, ItemStack.read(compound.getCompound("ItemRight")));
-//        super.read(null, compound);
-//    }
-//    @Override public CompoundNBT write(CompoundNBT compound) {
-//        compound.put("ItemLeft", inventory.getStackInSlot(0).serializeNBT());
-//        compound.put("ItemRight", inventory.getStackInSlot(1).serializeNBT());
-//        return super.write(compound);
-//    }
 
 }

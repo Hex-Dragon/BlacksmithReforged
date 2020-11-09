@@ -4,6 +4,7 @@ import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
+import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -35,4 +36,20 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         return new AnvilTileEntity();
     }
 
+    @Override public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int id, int param) {
+        super.eventReceived(state, worldIn, pos, id, param);
+        TileEntity tileentity = worldIn.getTileEntity(pos);
+        return tileentity != null && tileentity.receiveClientEvent(id, param);
+    }
+
+    @Override public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.isIn(newState.getBlock())) {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+            if (tileentity instanceof AnvilTileEntity) {
+                InventoryHelper.dropItems(worldIn, pos, ((AnvilTileEntity) tileentity).getItems());
+            }
+
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
+        }
+    }
 }
