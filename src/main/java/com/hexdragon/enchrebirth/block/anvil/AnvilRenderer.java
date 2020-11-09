@@ -24,7 +24,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
         ItemStack stackLeft = tileEntityIn.getStackInSlot(0);
         if (!stackLeft.isEmpty()) {
             matrixStackIn.push();
-            matrixStackIn.translate(0.7, 1.01, 0.52);
+            matrixStackIn.translate(0.7, 0.95, 0.53);
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90.0F));
             matrixStackIn.rotate(Vector3f.ZN.rotationDegrees(5.0F));
             matrixStackIn.scale(0.375F, 0.375F, 0.375F);
@@ -37,7 +37,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
         ItemStack stackRight = tileEntityIn.getStackInSlot(1);
         if (!stackRight.isEmpty()) {
             matrixStackIn.push();
-            matrixStackIn.translate(0.27, 1.01, 0.45);
+            matrixStackIn.translate(0.27, 0.95, 0.44);
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90.0F));
             matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(15.0F));
             matrixStackIn.scale(0.375F, 0.375F, 0.375F);
