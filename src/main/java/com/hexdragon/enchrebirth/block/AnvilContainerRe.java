@@ -32,15 +32,15 @@ public class AnvilContainerRe extends Container {
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
         this(id, playerInventory, IWorldPosCallable.DUMMY);
         this.inputInventory.container = this;
-        Main.LOGGER.warn("NEW2");
     }
     public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
         super(RegMain.containerAnvil.get(), id);
-        Main.LOGGER.warn("NEW1");
         this.worldPosCallable = worldPosCallable;
         this.player = playerInventory.player;
-        worldPosCallable.consume((world, blockPos) -> this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory());
-        if (this.inputInventory == null) this.inputInventory = new CraftInputInventory(2); // TODO
+        worldPosCallable.consume((world, blockPos) -> {
+            this.inputInventory = ((AnvilTileEntity) world.getTileEntity(blockPos)).getInventory();
+            if (this.inputInventory == null) this.inputInventory = new CraftInputInventory(2);
+        });
         Constuct(playerInventory);
     }
 
@@ -194,6 +194,7 @@ public class AnvilContainerRe extends Container {
 
 
 
+
     /*
      * --------------------------------------------------------------
      *  以下方法直接使用原本的代码，不需要进行修改
@@ -250,12 +251,6 @@ public class AnvilContainerRe extends Container {
         }
 
         return itemstack;
-    }
-
-    // 接口: 当页面关闭时触发，尝试返还物品
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
-        this.worldPosCallable.consume((p_234647_2_, p_234647_3_) -> this.clearContainer(playerIn, p_234647_2_, this.inputInventory));
     }
 
     // 铁砧输入改变时 Forge 触发的钩子事件（从 ForgeHooks.java 中复制）
