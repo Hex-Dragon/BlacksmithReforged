@@ -5,11 +5,14 @@ import com.hexdragon.enchrebirth.block.anvil.AnvilContainerRe;
 import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import com.hexdragon.enchrebirth.block.anvil.NetheriteAnvil;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneContainerRe;
+import com.hexdragon.enchrebirth.item.name_tag.NameTagRenameRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.tileentity.TileEntityType;
@@ -45,6 +48,10 @@ public class RegMain {
     public static final RegistryObject<TileEntityType<AnvilTileEntity.PerfectNetheriteAnvilTileEntity>> tileEntityPerfectNetheriteAnvil = TILE_ENTITIES.register("netherite_anvil", () -> TileEntityType.Builder.create(AnvilTileEntity.PerfectNetheriteAnvilTileEntity::new, blockPerfectNetheriteAnvil.get()).build(null));
     public static final RegistryObject<TileEntityType<AnvilTileEntity.ChippedNetheriteAnvilTileEntity>> tileEntityChippedNetheriteAnvil = TILE_ENTITIES.register("chipped_netherite_anvil", () -> TileEntityType.Builder.create(AnvilTileEntity.ChippedNetheriteAnvilTileEntity::new, blockChippedNetheriteAnvil.get()).build(null));
     public static final RegistryObject<TileEntityType<AnvilTileEntity.DamagedNetheriteAnvilTileEntity>> tileEntityDamagedNetheriteAnvil = TILE_ENTITIES.register("damaged_netherite_anvil", () -> TileEntityType.Builder.create(AnvilTileEntity.DamagedNetheriteAnvilTileEntity::new, blockDamagedNetheriteAnvil.get()).build(null));
+
+    // 特殊配方
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Main.MODID);
+    public static final RegistryObject<SpecialRecipeSerializer<NameTagRenameRecipe>> recipeNameTagRename = RECIPES.register("name_tag_rename", () -> new SpecialRecipeSerializer<>(NameTagRenameRecipe::new));
 
     // BlockState
     public static final IntegerProperty blockStateMaterial = IntegerProperty.create("material", 0, 1);
