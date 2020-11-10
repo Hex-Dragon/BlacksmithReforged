@@ -90,7 +90,7 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         return container;
     }
 
-    // TODO : 让漏斗只能从上方注入物品（需要使用 Capability）
-    // TODO : 让铁砧可以根据物品栏输出红石信号
+    // TODO : 让漏斗只能从上方注入物品（由于 Forge 接管了漏斗代码，需要使用它的 Capability，什么 SidedInventory 不管用）
+    // TODO : 让铁砧可以根据物品栏里的物品数量向比较器输出红石信号
 
 }

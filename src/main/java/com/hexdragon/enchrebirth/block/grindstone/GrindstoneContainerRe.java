@@ -105,9 +105,9 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // TODO : 打开砂轮物品栏时关闭游戏，会在重新上线后掉落包括输入和输出预览的全部物品（看起来是从服务端触发的，破坏方块什么的都不会出这个问题）
-    // TODO : GUI 左侧的图片对应换成渲染的 3D 物品模型
-    // TODO : 添加方块的使用音效
+    // TODO : [难顶] 打开砂轮物品栏时关闭游戏，会在重新上线后掉落包括输入和输出预览的全部物品（看起来是从服务端触发的，破坏方块什么的都不会出这个问题）
+    // TODO : 将铁砧、砂轮、命名牌 GUI 左侧的图片对应换成渲染的物品模型
+    // TODO : 添加方块的使用音效、命名牌的重命名音效什么的
 
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
     private ItemStack prepareNewItem(ItemStack stack) {
