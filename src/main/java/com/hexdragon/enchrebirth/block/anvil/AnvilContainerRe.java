@@ -186,16 +186,18 @@ public class AnvilContainerRe extends Container {
         });
 
         // 清空输入
-        this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
         if (this.materialCost > 0) {
-            ItemStack itemstack = this.inputInventory.getStackInSlot(1);
+            boolean reverseInput = !this.inputInventory.getStackInSlot(0).isDamageable();
+            this.inputInventory.setInventorySlotContents(reverseInput ? 1 : 0, ItemStack.EMPTY);
+            ItemStack itemstack = this.inputInventory.getStackInSlot(reverseInput ? 0 : 1);
             if (!itemstack.isEmpty() && itemstack.getCount() > this.materialCost) {
                 itemstack.shrink(this.materialCost);
-                this.inputInventory.setInventorySlotContents(1, itemstack);
+                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, itemstack);
             } else {
-                this.inputInventory.setInventorySlotContents(1, ItemStack.EMPTY);
+                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, ItemStack.EMPTY);
             }
         } else {
+            this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
             this.inputInventory.setInventorySlotContents(1, ItemStack.EMPTY);
         }
 
