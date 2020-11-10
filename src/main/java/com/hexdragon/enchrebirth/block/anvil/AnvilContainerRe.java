@@ -90,28 +90,33 @@ public class AnvilContainerRe extends Container {
     public void updateRepairOutput() {
 
         // 获取输入物品，并检查不为空
-        ItemStack inputItem = this.inputInventory.getStackInSlot(0);
+        ItemStack leftItem = this.inputInventory.getStackInSlot(0);
         ItemStack middleItem = this.inputInventory.getStackInSlot(1);
-        if (inputItem.isEmpty() || middleItem.isEmpty()) {
+        if (leftItem.isEmpty() || middleItem.isEmpty()) {
             this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
             return;
         }
-        ItemStack outputItem = inputItem.copy();
 
         // 初始化
         this.materialCost = 0;
-        Map<Enchantment, Integer> outputEnchantments = EnchantmentHelper.getEnchantments(outputItem);
 
         // 调用钩子函数
-        if (!onAnvilChange(this, inputItem, middleItem, outputInventory, inputItem.getDisplayName().getString(), 0))
+        if (!onAnvilChange(this, leftItem, middleItem, outputInventory, leftItem.getDisplayName().getString(), 0))
             return;
 
+        // 将可损坏的物品优先视作左侧
+        if (middleItem.isDamageable() && !leftItem.isDamageable()) {
+            ItemStack swapItem = leftItem.copy();
+            leftItem = middleItem; middleItem = swapItem;
+        }
+        ItemStack outputItem = leftItem.copy();
+
         // 判断配方情况
-        if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(inputItem, middleItem)) {
+        if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(leftItem, middleItem)) {
             // 使用原材料修复物品
 
             // 获取每个材料修复的耐久度
-            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem)));
+            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
             if (decrDamagePerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
@@ -121,11 +126,11 @@ public class AnvilContainerRe extends Container {
             int materialCost;
             for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
                 outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
-                decrDamagePerMaterial = Math.min(outputItem.getDamage(), (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem)));
+                decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
             }
             this.materialCost = materialCost;
 
-        } else if (outputItem.getItem() != middleItem.getItem() || !outputItem.isDamageable()) {
+        } else if (leftItem.getItem() != middleItem.getItem() || !leftItem.isDamageable()) {
             // 配方无效，直接结束
 
             this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
@@ -135,7 +140,7 @@ public class AnvilContainerRe extends Container {
             // 使用两个相同物品进行修复
 
             // 获取修复后的 Damage
-            int dur1 = inputItem.getMaxDamage() - inputItem.getDamage();
+            int dur1 = leftItem.getMaxDamage() - leftItem.getDamage();
             int dur2 = middleItem.getMaxDamage() - middleItem.getDamage();
             int durNew = dur1 + dur2 + outputItem.getMaxDamage() * 15 / 100 + 1; // 额外奖励 15% 耐久度
             int newDamage = outputItem.getMaxDamage() - durNew;
@@ -143,13 +148,12 @@ public class AnvilContainerRe extends Container {
             if (newDamage < outputItem.getDamage()) outputItem.setDamage(newDamage);
 
             // 将第二个物品的诅咒转移到第一个物品
+            Map<Enchantment, Integer> outputEnchantments = EnchantmentHelper.getEnchantments(outputItem);
             Map<Enchantment, Integer> curses = EnchantmentHelperRe.getCurseEnchantments(middleItem);
             if (curses.size() > 0) outputEnchantments.putAll(curses);
+            EnchantmentHelper.setEnchantments(outputEnchantments, outputItem);
 
         }
-
-        // 设置新物品的附魔
-        EnchantmentHelper.setEnchantments(outputEnchantments, outputItem);
 
         // 设置输出
         this.outputInventory.setInventorySlotContents(0, outputItem);
