@@ -10,8 +10,11 @@ import org.lwjgl.opengl.GL11;
 
 public class NameTagScreen extends Screen {
 
-    // 标题、背景、文本框声明
-    public NameTagScreen() {super(new TranslationTextComponent("gui.name_tag.title"));}
+    String defaultName;
+    public NameTagScreen(String defaultName) {
+        super(new TranslationTextComponent("gui.name_tag.title"));
+        this.defaultName = defaultName;
+    }
     final ResourceLocation GUI_TEXTURE = new ResourceLocation(Main.MODID, "textures/gui/name_tag.png");
     TextFieldWidget textField;
 
@@ -21,7 +24,8 @@ public class NameTagScreen extends Screen {
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
         // (x,y), (width, height)
-        this.textField = new TextFieldWidget(this.font, guiLeft + 60, guiTop + 33, 100, 20, new TranslationTextComponent("item.name_tag.name"));
+        this.textField = new TextFieldWidget(this.font, guiLeft + 61, guiTop + 27, 95, 16, new TranslationTextComponent("item.name_tag.name"));
+        this.textField.setText(defaultName);
         this.children.add(this.textField);
         super.init();
     }
@@ -59,5 +63,9 @@ public class NameTagScreen extends Screen {
     public void closeScreen() {
         this.minecraft.player.closeScreen();
         super.closeScreen();
+    }
+    public void onClose() {
+        Main.LOGGER.warn("CLOSE: " + textField.getText());
+
     }
 }

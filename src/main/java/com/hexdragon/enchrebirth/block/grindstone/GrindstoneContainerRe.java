@@ -109,7 +109,6 @@ public class GrindstoneContainerRe extends Container {
     // TODO : GUI 左侧的图片对应换成渲染的 3D 物品模型
     // TODO : 添加方块的使用音效
     // TODO : 添加一个特殊配方，将命名过的命名牌与任意非命名牌的物品合成，即可重命名物品
-    // TODO : 右键命名牌可以打开一个带文本框的 GUI，可以直接修改命名牌的名字
 
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
     private ItemStack prepareNewItem(ItemStack stack) {
