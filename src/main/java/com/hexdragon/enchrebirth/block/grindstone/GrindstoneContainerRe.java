@@ -1,9 +1,9 @@
 package com.hexdragon.enchrebirth.block.grindstone;
 
-import com.hexdragon.core.item.CraftResultInventoryRe;
-import com.hexdragon.core.item.EnchantmentHelperRe;
-import com.hexdragon.core.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.registry.RegMain;
+import com.hexdragon.util.item.CraftResultInventoryRe;
+import com.hexdragon.util.item.EnchantmentHelperRe;
+import com.hexdragon.util.item.ItemHelperRe;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;

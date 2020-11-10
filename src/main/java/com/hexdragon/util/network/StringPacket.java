@@ -1,0 +1,42 @@
+package com.hexdragon.util.network;
+
+import com.hexdragon.enchrebirth.Main;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.fml.network.NetworkEvent;
+
+import java.util.function.Supplier;
+
+public class StringPacket {
+    private String message;
+
+    public StringPacket(PacketBuffer buffer) {
+        message = buffer.readString(Short.MAX_VALUE);
+    }
+
+    public StringPacket(String message) {
+        this.message = message;
+    }
+
+    public void toBytes(PacketBuffer buf) {
+        buf.writeString(this.message);
+    }
+
+    public void handler(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+            ServerPlayerEntity player = ctx.get().getSender();
+            ItemStack item = player.getHeldItem(Hand.MAIN_HAND);
+            if (item.getItem() == Items.NAME_TAG) {
+                item.setDisplayName(new StringTextComponent(this.message));
+                // TODO : 检查在副手的情况？
+            } else {
+                Main.LOGGER.warn("Got a wrong name tag packet: " + this.message);
+            }
+        });
+        ctx.get().setPacketHandled(true);
+    }
+}

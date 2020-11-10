@@ -1,4 +1,4 @@
-package com.hexdragon.core.item;
+package com.hexdragon.util.item;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.IInventory;

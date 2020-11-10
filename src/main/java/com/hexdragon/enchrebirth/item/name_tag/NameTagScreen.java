@@ -1,6 +1,8 @@
 package com.hexdragon.enchrebirth.item.name_tag;
 
 import com.hexdragon.enchrebirth.Main;
+import com.hexdragon.util.network.Networking;
+import com.hexdragon.util.network.StringPacket;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -65,7 +67,7 @@ public class NameTagScreen extends Screen {
         super.closeScreen();
     }
     public void onClose() {
-        Main.LOGGER.warn("CLOSE: " + textField.getText());
-
+        // Main.LOGGER.warn("CLOSE: " + textField.getText());
+        Networking.INSTANCE.sendToServer(new StringPacket(textField.getText()));
     }
 }
