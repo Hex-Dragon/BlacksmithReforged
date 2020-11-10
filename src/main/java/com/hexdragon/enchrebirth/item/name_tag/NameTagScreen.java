@@ -20,68 +20,71 @@ public class NameTagScreen extends Screen {
     Hand hand;
     public NameTagScreen(String defaultName, Hand hand) {
         super(new TranslationTextComponent("gui.name_tag.title"));
+        // 从右键事件中获取命名牌的原名与使用的手
         this.defaultName = defaultName; this.hand = hand;
     }
-    final ResourceLocation GUI_TEXTURE = new ResourceLocation(Main.MODID, "textures/gui/name_tag.png");
-    TextFieldWidget textField;
 
-    @Override
-    protected void init() {
+    TextFieldWidget textField;
+    int guiLeft, guiTop;
+    @Override protected void init() {
         this.minecraft.keyboardListener.enableRepeatEvents(true);
+        // 计算不知道有啥用的 GUI 边距
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
-        // (x,y), (width, height)
+        // 新建文本框；注意需要在这里指定 (x, y, width, height) 而不是在 render 中指定
         this.textField = new TextFieldWidget(this.font, guiLeft + 61, guiTop + 27, 95, 16, new StringTextComponent(defaultName));
-        this.textField.setText(defaultName);
+        this.textField.setText(defaultName); // 需要使用 setText 设置文本，构建函数的最后一个参数不知道有啥用
         this.children.add(this.textField);
         super.init();
-    }
-
-    int xSize = 176, ySize = 56;
-    int titleX = 61, titleY = 12;
-    int guiLeft, guiTop;
-
-    @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrixStack);
-
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(GUI_TEXTURE);
-        this.blit(matrixStack, guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
-
-        this.font.func_243248_b(matrixStack, this.title, (float) this.titleX + guiLeft, (float) this.titleY + guiTop, 4210752);
-        this.textField.render(matrixStack, mouseX, mouseY, partialTicks);
-
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-    }
-
-    public boolean isPauseScreen() {
-        return false;
-    }
-    public void tick() {
-        super.tick();
-        if (!this.minecraft.player.isAlive() || this.minecraft.player.removed) {
-            this.minecraft.player.closeScreen();
-        }
     }
     public void removed() {
         this.minecraft.keyboardListener.enableRepeatEvents(false);
     }
-    public void closeScreen() {
-        this.minecraft.player.closeScreen();
-        super.closeScreen();
+
+    int xSize = 176, ySize = 56, titleX = 61, titleY = 12; // GUI 大小与标题位置
+    @Override public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(matrixStack);
+        // 绘制背景图片
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+        this.minecraft.getTextureManager().bindTexture(new ResourceLocation(Main.MODID, "textures/gui/name_tag.png"));
+        this.blit(matrixStack, guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
+        // 绘制标题
+        this.font.func_243248_b(matrixStack, this.title, (float) this.titleX + guiLeft, (float) this.titleY + guiTop, 4210752);
+        // 绘制文本框
+        this.textField.render(matrixStack, mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
-    public void onClose() {
-        minecraft.player.getHeldItem(hand).setDisplayName(new StringTextComponent(textField.getText()));
-        // Networking.INSTANCE.sendToServer(new NameTagPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
-    }
+
+    // 在玩家按下物品栏键或回车时，主动关闭 GUI
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
-        if (!textField.isFocused() && minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey)) {
+        if (keyCode == 257 || // 玩家按下回车键
+                (!textField.isFocused() && minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey))) {
             this.closeScreen();
             return true;
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
+
+    // 在关闭 GUI 时根据文本框内容更新命名牌的 DisplayName
+    public void onClose() {
+        minecraft.player.getHeldItem(hand).setDisplayName(new StringTextComponent(textField.getText()));
+        // 之前以为要用网络包发包给服务端，看上去是我想多了，不过还是留在这里，之后写需要发包的东西的时候还能用
+        // Networking.INSTANCE.sendToServer(new NameTagPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
+    }
+
+    // 让游戏在打开 GUI 时不会暂停
+    public boolean isPauseScreen() {return false;}
+
+    // 在玩家挂掉的时候关闭 GUI
+    public void tick() {
+        super.tick();
+        if (!this.minecraft.player.isAlive() || this.minecraft.player.removed) this.minecraft.player.closeScreen();
+    }
+    public void closeScreen() {
+        this.minecraft.player.closeScreen();
+        super.closeScreen();
+    }
+
 }

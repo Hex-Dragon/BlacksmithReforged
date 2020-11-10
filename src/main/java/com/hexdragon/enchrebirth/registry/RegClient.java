@@ -4,7 +4,6 @@ import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.block.anvil.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.anvil.AnvilScreenRe;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneScreenRe;
-import com.hexdragon.util.network.Networking;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -12,7 +11,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber(modid = Main.MODID, bus = Mod.EventBusSubscriber.Bus.MOD) @OnlyIn(Dist.CLIENT)
 public class RegClient {
@@ -33,9 +31,9 @@ public class RegClient {
         ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedNetheriteAnvil.get(), (AnvilRenderer::new));
     }
 
-    @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
-        // 注册数据包
-        Networking.registerMessage();
-    }
+    //    @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
+    //        // 注册数据包
+    //        Networking.registerMessage();
+    //    }
 
 }

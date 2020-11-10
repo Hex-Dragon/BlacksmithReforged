@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class NameTagItemMixin extends Item {
     public NameTagItemMixin(Properties properties) {super(properties);}
 
+    // 接管命名牌的右键事件，打开 GUI
     @Override public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (worldIn.isRemote) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
