@@ -6,16 +6,19 @@ import com.hexdragon.util.network.StringPacket;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.lwjgl.opengl.GL11;
 
 public class NameTagScreen extends Screen {
 
     String defaultName;
-    public NameTagScreen(String defaultName) {
+    Hand hand;
+    public NameTagScreen(String defaultName, Hand hand) {
         super(new TranslationTextComponent("gui.name_tag.title"));
-        this.defaultName = defaultName;
+        this.defaultName = defaultName; this.hand = hand;
     }
     final ResourceLocation GUI_TEXTURE = new ResourceLocation(Main.MODID, "textures/gui/name_tag.png");
     TextFieldWidget textField;
@@ -26,7 +29,7 @@ public class NameTagScreen extends Screen {
         this.guiLeft = (this.width - this.xSize) / 2;
         this.guiTop = (this.height - this.ySize) / 2;
         // (x,y), (width, height)
-        this.textField = new TextFieldWidget(this.font, guiLeft + 61, guiTop + 27, 95, 16, new TranslationTextComponent("item.name_tag.name"));
+        this.textField = new TextFieldWidget(this.font, guiLeft + 61, guiTop + 27, 95, 16, new StringTextComponent(defaultName));
         this.textField.setText(defaultName);
         this.children.add(this.textField);
         super.init();
@@ -67,7 +70,6 @@ public class NameTagScreen extends Screen {
         super.closeScreen();
     }
     public void onClose() {
-        // Main.LOGGER.warn("CLOSE: " + textField.getText());
-        Networking.INSTANCE.sendToServer(new StringPacket(textField.getText()));
+        Networking.INSTANCE.sendToServer(new StringPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
     }
 }

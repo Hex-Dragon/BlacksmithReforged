@@ -21,8 +21,8 @@ public abstract class NameTagItemMixin extends Item {
     @Override public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (worldIn.isRemote) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                ITextComponent defaultName = getDisplayName(playerIn.getHeldItem(handIn));
-                Minecraft.getInstance().displayGuiScreen(new NameTagScreen(defaultName.getString()));
+                ITextComponent defaultName = playerIn.getHeldItem(handIn).getDisplayName();
+                Minecraft.getInstance().displayGuiScreen(new NameTagScreen(defaultName.getString(), handIn));
             });
         }
         return super.onItemRightClick(worldIn, playerIn, handIn);
