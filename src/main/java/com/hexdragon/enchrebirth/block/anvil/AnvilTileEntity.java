@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 public class AnvilTileEntity extends LockableLootTileEntity {
     protected ITextComponent getDefaultName() {return new TranslationTextComponent("container.anvil.title");}
 
-    // 构造函数，为了支持不同损坏度的铁砧复读了三次
+    // 构造函数，为了支持不同损坏度的铁砧复读了 6 次
     public static class PerfectAnvilTileEntity extends AnvilTileEntity {
         public PerfectAnvilTileEntity() { super(RegMain.tileEntityPerfectAnvil.get()); }
     }
@@ -34,6 +34,15 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     }
     public static class DamagedAnvilTileEntity extends AnvilTileEntity {
         public DamagedAnvilTileEntity() { super(RegMain.tileEntityDamagedAnvil.get()); }
+    }
+    public static class PerfectNetheriteAnvilTileEntity extends AnvilTileEntity {
+        public PerfectNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheritePerfectAnvil.get()); }
+    }
+    public static class ChippedNetheriteAnvilTileEntity extends AnvilTileEntity {
+        public ChippedNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheriteChippedAnvil.get()); }
+    }
+    public static class DamagedNetheriteAnvilTileEntity extends AnvilTileEntity {
+        public DamagedNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheriteDamagedAnvil.get()); }
     }
     public AnvilTileEntity(TileEntityType<?> typeIn) { super(typeIn); }
 
