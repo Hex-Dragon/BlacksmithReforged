@@ -11,16 +11,16 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class StringPacket {
+public class NameTagPacket {
     private byte hand;
     private String message;
 
-    public StringPacket(PacketBuffer buffer) {
+    public NameTagPacket(PacketBuffer buffer) {
         hand = buffer.readByte();
         message = buffer.readString(Short.MAX_VALUE);
     }
 
-    public StringPacket(String message, byte hand) {
+    public NameTagPacket(String message, byte hand) {
         this.message = message;
         this.hand = hand;
     }

@@ -19,12 +19,6 @@ public class Networking {
                 (s) -> true,
                 (s) -> true
         );
-        INSTANCE.registerMessage(
-                nextID(),
-                StringPacket.class,
-                StringPacket::toBytes,
-                StringPacket::new,
-                StringPacket::handler
-        );
+        INSTANCE.registerMessage(nextID(), NameTagPacket.class, NameTagPacket::toBytes, NameTagPacket::new, NameTagPacket::handler);
     }
 }

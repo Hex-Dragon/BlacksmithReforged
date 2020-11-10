@@ -1,17 +1,19 @@
 package com.hexdragon.enchrebirth.item.name_tag;
 
 import com.hexdragon.enchrebirth.Main;
-import com.hexdragon.util.network.Networking;
-import com.hexdragon.util.network.StringPacket;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.lwjgl.opengl.GL11;
 
+@OnlyIn(Dist.CLIENT)
 public class NameTagScreen extends Screen {
 
     String defaultName;
@@ -70,6 +72,16 @@ public class NameTagScreen extends Screen {
         super.closeScreen();
     }
     public void onClose() {
-        Networking.INSTANCE.sendToServer(new StringPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
+        minecraft.player.getHeldItem(hand).setDisplayName(new StringTextComponent(textField.getText()));
+        // Networking.INSTANCE.sendToServer(new NameTagPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
+    }
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        InputMappings.Input mouseKey = InputMappings.getInputByCode(keyCode, scanCode);
+        if (!textField.isFocused() && minecraft.gameSettings.keyBindInventory.isActiveAndMatches(mouseKey)) {
+            this.closeScreen();
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
     }
 }
