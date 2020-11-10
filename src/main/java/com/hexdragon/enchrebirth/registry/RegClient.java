@@ -1,9 +1,9 @@
 package com.hexdragon.enchrebirth.registry;
 
 import com.hexdragon.enchrebirth.Main;
-import com.hexdragon.enchrebirth.block.GrindstoneScreenRe;
 import com.hexdragon.enchrebirth.block.anvil.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.anvil.AnvilScreenRe;
+import com.hexdragon.enchrebirth.block.grindstone.GrindstoneScreenRe;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

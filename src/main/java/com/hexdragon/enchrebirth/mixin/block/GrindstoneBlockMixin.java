@@ -1,6 +1,6 @@
 package com.hexdragon.enchrebirth.mixin.block;
 
-import com.hexdragon.enchrebirth.block.GrindstoneContainerRe;
+import com.hexdragon.enchrebirth.block.grindstone.GrindstoneContainerRe;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.HorizontalFaceBlock;

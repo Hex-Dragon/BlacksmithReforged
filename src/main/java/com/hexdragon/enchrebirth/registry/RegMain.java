@@ -1,10 +1,10 @@
 package com.hexdragon.enchrebirth.registry;
 
 import com.hexdragon.enchrebirth.Main;
-import com.hexdragon.enchrebirth.block.GrindstoneContainerRe;
 import com.hexdragon.enchrebirth.block.anvil.AnvilContainerRe;
 import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import com.hexdragon.enchrebirth.block.anvil.NetheriteAnvil;
+import com.hexdragon.enchrebirth.block.grindstone.GrindstoneContainerRe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;

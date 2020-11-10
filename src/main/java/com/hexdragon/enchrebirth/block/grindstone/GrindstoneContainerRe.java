@@ -1,4 +1,4 @@
-package com.hexdragon.enchrebirth.block;
+package com.hexdragon.enchrebirth.block.grindstone;
 
 import com.hexdragon.core.item.CraftResultInventoryRe;
 import com.hexdragon.core.item.EnchantmentHelperRe;

@@ -1,4 +1,4 @@
-package com.hexdragon.enchrebirth.block;
+package com.hexdragon.enchrebirth.block.grindstone;
 
 import com.hexdragon.enchrebirth.Main;
 import com.mojang.blaze3d.matrix.MatrixStack;
