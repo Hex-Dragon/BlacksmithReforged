@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
 public class AnvilTileEntity extends LockableLootTileEntity {
-    protected ITextComponent getDefaultName() {return new TranslationTextComponent("container.anvil.title");}
+    protected ITextComponent getDefaultName() {return new TranslationTextComponent("gui.anvil.title");}
 
     // 构造函数，为了支持不同损坏度的铁砧复读了 6 次
     public static class PerfectAnvilTileEntity extends AnvilTileEntity {

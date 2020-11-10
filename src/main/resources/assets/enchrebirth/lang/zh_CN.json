@@ -1,6 +1,7 @@
 {
-  "container.grindstone.title": "去除附魔",
-  "container.anvil.title": "修复物品",
+  "gui.grindstone.title": "去除附魔",
+  "gui.anvil.title": "修复物品",
+  "gui.name_tag.title": "重命名",
   "block.enchrebirth.netherite_anvil": "下界合金砧",
   "block.enchrebirth.chipped_netherite_anvil": "开裂的下界合金砧",
   "block.enchrebirth.damaged_netherite_anvil": "损坏的下界合金砧"

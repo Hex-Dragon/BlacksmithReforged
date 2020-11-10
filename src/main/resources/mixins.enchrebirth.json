@@ -5,6 +5,7 @@
   "mixins": [
     "RepairItemRecipeMixin",
     "block/GrindstoneBlockMixin",
-    "block/AnvilBlockMixin"
+    "block/AnvilBlockMixin",
+    "item/NameTagItemMixin"
   ]
 }
