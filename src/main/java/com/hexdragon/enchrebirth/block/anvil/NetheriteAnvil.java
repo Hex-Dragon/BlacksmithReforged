@@ -16,10 +16,9 @@ import net.minecraftforge.common.ToolType;
 public class NetheriteAnvil extends AnvilBlock {
 
     public NetheriteAnvil() {
-        super(AbstractBlock.Properties.create(Material.ANVIL, MaterialColor.IRON).setRequiresTool().hardnessAndResistance(50F, 1200.0F).harvestTool(ToolType.PICKAXE).harvestLevel(4).sound(SoundType.ANVIL));
+        super(AbstractBlock.Properties.create(Material.ANVIL, MaterialColor.IRON).setRequiresTool().hardnessAndResistance(50F, 1200.0F).harvestTool(ToolType.PICKAXE).harvestLevel(3).sound(SoundType.ANVIL));
         this.setDefaultState(this.stateContainer.getBaseState().with(FACING, Direction.NORTH).with(RegMain.blockStateMaterial, 1));
     }
-    // TODO : 设置挖掘等级等等
 
     public static class NetheriteAnvilItem extends BlockItem {
         public NetheriteAnvilItem(Block blockIn) {

@@ -36,13 +36,13 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         public DamagedAnvilTileEntity() { super(RegMain.tileEntityDamagedAnvil.get()); }
     }
     public static class PerfectNetheriteAnvilTileEntity extends AnvilTileEntity {
-        public PerfectNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheritePerfectAnvil.get()); }
+        public PerfectNetheriteAnvilTileEntity() { super(RegMain.tileEntityPerfectNetheriteAnvil.get()); }
     }
     public static class ChippedNetheriteAnvilTileEntity extends AnvilTileEntity {
-        public ChippedNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheriteChippedAnvil.get()); }
+        public ChippedNetheriteAnvilTileEntity() { super(RegMain.tileEntityChippedNetheriteAnvil.get()); }
     }
     public static class DamagedNetheriteAnvilTileEntity extends AnvilTileEntity {
-        public DamagedNetheriteAnvilTileEntity() { super(RegMain.tileEntityNetheriteDamagedAnvil.get()); }
+        public DamagedNetheriteAnvilTileEntity() { super(RegMain.tileEntityDamagedNetheriteAnvil.get()); }
     }
     public AnvilTileEntity(TileEntityType<?> typeIn) { super(typeIn); }
 

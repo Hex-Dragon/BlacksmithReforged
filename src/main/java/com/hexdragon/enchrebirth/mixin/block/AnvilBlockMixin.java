@@ -44,8 +44,14 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
             return new AnvilTileEntity.PerfectAnvilTileEntity();
         } else if (state.isIn(Blocks.CHIPPED_ANVIL)) {
             return new AnvilTileEntity.ChippedAnvilTileEntity();
-        } else {
+        } else if (state.isIn(Blocks.DAMAGED_ANVIL)) {
             return new AnvilTileEntity.DamagedAnvilTileEntity();
+        } else if (state.isIn(RegMain.blockPerfectNetheriteAnvil.get())) {
+            return new AnvilTileEntity.PerfectNetheriteAnvilTileEntity();
+        } else if (state.isIn(RegMain.blockChippedNetheriteAnvil.get())) {
+            return new AnvilTileEntity.ChippedNetheriteAnvilTileEntity();
+        } else {
+            return new AnvilTileEntity.DamagedNetheriteAnvilTileEntity();
         }
     }
 
@@ -81,5 +87,17 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder, CallbackInfo cir) {
         builder.add(RegMain.blockStateMaterial);
     }
+
+    // 阻止下界合金砧因为摔落而损坏
+    @Inject(method = "damage", at = @At(value = "HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    private static void damage(BlockState state, CallbackInfoReturnable<BlockState> cir) {
+        if (state.isIn(RegMain.blockDamagedNetheriteAnvil.get()) || state.isIn(RegMain.blockChippedNetheriteAnvil.get()) || state.isIn(RegMain.blockPerfectNetheriteAnvil.get())) {
+            cir.setReturnValue(state.getBlock().getDefaultState().with(FACING, state.get(FACING)));
+            cir.cancel();
+        }
+    }
+
+    // TODO : 下界合金砧的 GUI 打不开
+    // TODO : 破坏下界合金砧没有掉落物
 
 }

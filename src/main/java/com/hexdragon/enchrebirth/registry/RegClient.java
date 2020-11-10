@@ -26,6 +26,9 @@ public class RegClient {
         ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectAnvil.get(), (AnvilRenderer::new));
         ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedAnvil.get(), (AnvilRenderer::new));
         ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectNetheriteAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedNetheriteAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedNetheriteAnvil.get(), (AnvilRenderer::new));
     }
 
 }
