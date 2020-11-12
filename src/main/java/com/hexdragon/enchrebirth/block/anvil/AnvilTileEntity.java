@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -12,18 +13,12 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
@@ -52,14 +47,13 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     public AnvilTileEntity(TileEntityType<?> typeIn) { super(typeIn); }
 
     // 物品栏
-    public ItemStackHandler inventory = new ItemStackHandler(2);
+    public NonNullList<ItemStack> inventory = NonNullList.withSize(2, ItemStack.EMPTY);
     public int getSizeInventory() {return 2;}
     public NonNullList<ItemStack> getItems() {
-        return NonNullList.from(inventory.getStackInSlot(0), inventory.getStackInSlot(1));
+        return this.inventory;
     }
     public void setItems(NonNullList<ItemStack> itemsIn) {
-        this.inventory.setStackInSlot(0, itemsIn.get(0));
-        this.inventory.setStackInSlot(1, itemsIn.get(1));
+        this.inventory = itemsIn;
     }
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         // 只允许将物品放入（这个方法只影响自动化，从 GUI 放入需要在 Slot 里写）
@@ -69,12 +63,13 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     // NBT 交互
     public CompoundNBT write(CompoundNBT compound) {
         super.write(compound);
-        if (!this.checkLootAndWrite(compound)) compound.put("Inventory", this.inventory.serializeNBT());
+        if (!this.checkLootAndWrite(compound)) ItemStackHelper.saveAllItems(compound, this.inventory);
         return compound;
     }
     public void read(BlockState state, CompoundNBT nbt) {
         super.read(state, nbt);
-        if (!this.checkLootAndRead(nbt)) this.inventory.deserializeNBT(nbt.getCompound("Inventory"));
+        this.inventory = NonNullList.withSize(this.getSizeInventory(), ItemStack.EMPTY);
+        if (!this.checkLootAndRead(nbt)) ItemStackHelper.loadAllItems(nbt, this.inventory);
     }
 
     // 支持从服务器接受数据，以在物品改变时同步显示
@@ -95,20 +90,7 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         return container;
     }
 
-    // 让漏斗只能从上方注入物品
-    @Nonnull @Override public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> new ItemStackHandler() {
-                @Override public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-                    if (side != Direction.UP) return ItemStack.EMPTY;
-                    return super.insertItem(slot, stack, simulate);
-                }
-            }).cast();
-        }
-        return super.getCapability(cap, side);
-    }
-
-    // TODO : 由于目前的铁砧判断方式，它现在不接受线，因为线有对应的方块……
+    // TODO : 让漏斗只能从上方注入物品（由于 Forge 接管了漏斗代码，需要使用它的 Capability，什么 SidedInventory 不管用）
     // TODO : 让铁砧可以根据物品栏里的物品数量向比较器输出红石信号
 
 }
