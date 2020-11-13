@@ -2,9 +2,7 @@ package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
@@ -63,10 +61,6 @@ public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInv
     public void setItems(NonNullList<ItemStack> itemsIn) {
         this.inventory = itemsIn;
     }
-    public boolean isItemValidForSlot(int index, ItemStack stack) {
-        // 只允许将物品放入（这个方法只影响自动化，从 GUI 放入需要在 Slot 里写）
-        return Block.getBlockFromItem(stack.getItem()) == Blocks.AIR;
-    }
 
     // NBT 交互
     public CompoundNBT write(CompoundNBT compound) {
@@ -121,7 +115,6 @@ public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInv
     }
 
     // TODO : 让目前的机制修改根据游戏难度略有变化
-    // TODO : 由于目前的铁砧判断方式，它现在不接受线，因为线有对应的方块……是不是有一个 tag 可以解决这个问题？
     // TODO : 让铁砧可以根据物品栏里的物品数量向比较器输出红石信号
 
 }
