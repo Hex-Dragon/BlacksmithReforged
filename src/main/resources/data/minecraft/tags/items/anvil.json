@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "enchrebirth:netherite_anvil",
+    "enchrebirth:chipped_netherite_anvil",
+    "enchrebirth:damaged_netherite_anvil"
+  ]
+}

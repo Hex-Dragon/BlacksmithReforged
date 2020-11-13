@@ -97,7 +97,7 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         return container;
     }
 
-    // TODO : [难顶] 让漏斗只能从上方注入物品（由于 Forge 接管了漏斗代码，需要使用它的 Capability，什么 SidedInventory 不管用），不过这个写起来还是不太对的样子
+    // TODO : <难顶> 让漏斗只能从上方注入物品（由于 Forge 接管了漏斗代码，需要使用它的 Capability，什么 SidedInventory 不管用），不过这个写起来还是不太对的样子
     @Nonnull @Override public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return LazyOptional.of(() -> new ItemStackHandler() {
