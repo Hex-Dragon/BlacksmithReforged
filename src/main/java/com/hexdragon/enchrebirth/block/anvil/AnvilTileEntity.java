@@ -1,14 +1,15 @@
 package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.enchrebirth.registry.RegMain;
+import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -23,13 +24,13 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 // 铁砧 TileEntity，用于引导自定义模型与存储物品 NBT
-public class AnvilTileEntity extends LockableLootTileEntity {
+public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInventory {
     protected ITextComponent getDefaultName() {return new TranslationTextComponent("gui.anvil.title");}
 
     // 构造函数，为了支持不同损坏度的铁砧复读了 6 次
@@ -53,7 +54,7 @@ public class AnvilTileEntity extends LockableLootTileEntity {
     }
     public AnvilTileEntity(TileEntityType<?> typeIn) { super(typeIn); }
 
-    // 物品栏
+    // 物品栏基础
     public NonNullList<ItemStack> inventory = NonNullList.withSize(2, ItemStack.EMPTY);
     public int getSizeInventory() {return 2;}
     public NonNullList<ItemStack> getItems() {
@@ -97,18 +98,24 @@ public class AnvilTileEntity extends LockableLootTileEntity {
         return container;
     }
 
-    // TODO : <难顶> 让漏斗只能从上方注入物品（由于 Forge 接管了漏斗代码，需要使用它的 Capability，什么 SidedInventory 不管用），不过这个写起来还是不太对的样子
+    // 控制漏斗的流入和流出
+    @Override public int[] getSlotsForFace(Direction direction) {
+        if (direction == Direction.UP) return new int[]{0, 1}; // 顶部可以向全部两格输入
+        Direction blockDirection = this.getBlockState().get(AnvilBlock.FACING);
+        if (direction == blockDirection.getOpposite()) return new int[]{0}; // 左侧只能输入到左侧
+        if (direction == blockDirection) return new int[]{1}; // 右侧只能输入到右侧
+        return new int[0]; // 其他侧拒绝访问
+    }
+    @Override public boolean canInsertItem(int index, ItemStack itemStackIn, @Nullable Direction direction) {
+        Direction blockDirection = this.getBlockState().get(AnvilBlock.FACING);
+        return direction == Direction.UP || direction == blockDirection || direction == blockDirection.getOpposite();
+    }
+    @Override public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
+        return false;
+    }
     @Nonnull @Override public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return LazyOptional.of(() -> new ItemStackHandler() {
-                @Override public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-                    if (side == Direction.UP) {
-                        return new ItemStack(Items.APPLE);
-                    } else {
-                        return stack;
-                    }
-                }
-            }).cast();
+        if (!this.removed && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return LazyOptional.of(() -> new SidedInvWrapper(this, side)).cast();
         }
         return super.getCapability(cap, side);
     }
