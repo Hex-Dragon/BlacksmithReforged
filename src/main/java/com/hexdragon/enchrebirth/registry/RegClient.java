@@ -31,6 +31,7 @@ public class RegClient {
         ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedNetheriteAnvil.get(), (AnvilRenderer::new));
     }
 
+
     //    @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
     //        // 注册数据包
     //        Networking.registerMessage();

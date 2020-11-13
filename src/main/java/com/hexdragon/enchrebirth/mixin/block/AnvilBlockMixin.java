@@ -97,7 +97,7 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         }
     }
 
-    // TODO : [难顶] 下界合金砧的 GUI 打不开，准确的说是客户端打开了但是服务端又把它关掉了，鬼知道为啥
+    // TODO : 为下界合金砧注册 ANVIL 的 tag
     // TODO : 破坏下界合金砧没有掉落物
 
 }
