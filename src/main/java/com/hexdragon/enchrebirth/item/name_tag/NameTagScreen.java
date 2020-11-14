@@ -1,6 +1,8 @@
 package com.hexdragon.enchrebirth.item.name_tag;
 
 import com.hexdragon.enchrebirth.Main;
+import com.hexdragon.util.network.NameTagPacket;
+import com.hexdragon.util.network.Networking;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -69,9 +71,9 @@ public class NameTagScreen extends Screen {
 
     // 在关闭 GUI 时根据文本框内容更新命名牌的 DisplayName
     public void onClose() {
-        minecraft.player.getHeldItem(hand).setDisplayName(new StringTextComponent(textField.getText()));
-        // 之前以为要用网络包发包给服务端，看上去是我想多了，不过还是留在这里，之后写需要发包的东西的时候还能用
-        // Networking.INSTANCE.sendToServer(new NameTagPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
+        // 必须通过网络发包的方式提交更新，否则只是客户端 “认为” 名字变了，把物品换个格子就又改回去了
+        // minecraft.player.getHeldItem(hand).setDisplayName(new StringTextComponent(textField.getText()));
+        Networking.INSTANCE.sendToServer(new NameTagPacket(textField.getText(), (byte) (hand == Hand.MAIN_HAND ? 0 : 1)));
     }
 
     // 让游戏在打开 GUI 时不会暂停

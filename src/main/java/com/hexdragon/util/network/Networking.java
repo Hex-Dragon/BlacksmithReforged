@@ -4,7 +4,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-// 废弃的代码，如果之后要写发包的话可以拿来用
+// TODO : 重新整理一下网络相关的代码
 public class Networking {
     public static SimpleChannel INSTANCE;
     private static int ID = 0;

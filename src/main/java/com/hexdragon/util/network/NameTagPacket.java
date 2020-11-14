@@ -11,7 +11,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-// 废弃的代码，如果之后要写发包的话可以拿来用
 public class NameTagPacket {
     private byte hand;
     private String message;
