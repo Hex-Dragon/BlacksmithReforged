@@ -103,8 +103,12 @@ public class AnvilContainerRe extends Container {
         if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(leftItem, middleItem)) {
             // 使用原材料修复物品
 
+            // 根据难度获取修复比
+            final float[] radio = {0};
+            worldPosCallable.consume((world, pos) -> radio[0] = new float[]{1f, 1f, 0.98f, 0.95f}[world.getDifficulty().getId()]);
+
             // 获取每个材料修复的耐久度
-            int decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
+            int decrDamagePerMaterial = (int) Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
             if (decrDamagePerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
@@ -114,7 +118,7 @@ public class AnvilContainerRe extends Container {
             int materialCost;
             for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
                 outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
-                decrDamagePerMaterial = Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem));
+                decrDamagePerMaterial = (int) Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
             }
             this.materialCost = materialCost;
 
@@ -127,10 +131,14 @@ public class AnvilContainerRe extends Container {
         } else {
             // 使用两个相同物品进行修复
 
+            // 根据难度获取奖励的耐久度百分比
+            final int[] radio = {0};
+            worldPosCallable.consume((world, pos) -> radio[0] = new int[]{25, 25, 15, 5}[world.getDifficulty().getId()]);
+
             // 获取修复后的 Damage
             int dur1 = leftItem.getMaxDamage() - leftItem.getDamage();
             int dur2 = middleItem.getMaxDamage() - middleItem.getDamage();
-            int durNew = dur1 + dur2 + outputItem.getMaxDamage() * 15 / 100 + 1; // 额外奖励 15% 耐久度
+            int durNew = dur1 + dur2 + outputItem.getMaxDamage() * radio[0] / 100 + 1;
             int newDamage = outputItem.getMaxDamage() - durNew;
             if (newDamage < 0) newDamage = 0;
             if (newDamage < outputItem.getDamage()) outputItem.setDamage(newDamage);
@@ -153,12 +161,14 @@ public class AnvilContainerRe extends Container {
 
         // 触发铁砧的随机损坏
         // 对于原版：“平均每个铁砧能用 25 次，相当于每用一次铁砧就消耗了 1.24 个用于合成铁砧的铁锭”
-        float breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(player, itemStack, AnvilContainerRe.this.inputInventory.getStackInSlot(0), AnvilContainerRe.this.inputInventory.getStackInSlot(1));
+        float baseBreakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(player, itemStack, AnvilContainerRe.this.inputInventory.getStackInSlot(0), AnvilContainerRe.this.inputInventory.getStackInSlot(1));
         this.worldPosCallable.consume((world, blockPos) -> {
             BlockState blockstate = world.getBlockState(blockPos);
             // 考虑到铁砧现在没有等级消耗，略微增加损耗速率是比较平衡的
-            // 下界合金砧的耐久为普通铁砧的 15 倍，平均能用 250 次
-            float newBreakChance = breakChance * ((blockstate.get(RegMain.blockStateMaterial) == 0) ? 1.5F : 0.1F);
+            // 下界合金砧的耐久在普通难度下为普通铁砧的 20 倍，平均能用 400 次
+            float[] ironChance = {0.75f, 1f, 1.25f, 1.75f};
+            float[] netheriteChance = {0f, 0f, 0.0625f, 0.1f};
+            float newBreakChance = baseBreakChance * ((blockstate.get(RegMain.blockStateMaterial) == 0) ? ironChance : netheriteChance)[world.getDifficulty().getId()];
             if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < newBreakChance) {
                 BlockState blockstate1 = AnvilBlock.damage(blockstate);
                 if (blockstate1 == null) {

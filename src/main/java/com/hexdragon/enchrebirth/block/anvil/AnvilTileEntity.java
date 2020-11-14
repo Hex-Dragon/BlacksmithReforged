@@ -114,7 +114,6 @@ public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInv
         return super.getCapability(cap, side);
     }
 
-    // TODO : 让目前的机制修改根据游戏难度略有变化
     // TODO : 让铁砧可以根据物品栏里的物品数量向比较器输出红石信号
 
 }
