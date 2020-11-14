@@ -97,7 +97,7 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         }
     }
 
-    // TODO : <重要> 破坏下界合金砧没有掉落物
+    // TODO : <重要> 破坏下界合金砧没有掉落物（加了 LootTable 也没啥用）
     // TODO : [010] 绘制下界合金砧的材质（也可以修改原版铁砧的材质以让它有更大的区分度？）
 
 }

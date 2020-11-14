@@ -11,7 +11,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 // 将命名牌与任意其他物品合成，可以消耗一个命名牌将其重命名
-// TODO : <重要> <难以完成> 似乎命名牌的这个特殊配方注册失败了，虽然有注册代码但是连新建实例都没触发过
 public class NameTagRenameRecipe extends SpecialRecipe {
     public NameTagRenameRecipe(ResourceLocation idIn) { super(idIn); }
     public IRecipeSerializer<?> getSerializer() {return RegMain.recipeNameTagRename.get();}
