@@ -1,4 +1,4 @@
-package com.hexdragon.util.item;
+package com.hexdragon.corere.item;
 
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;

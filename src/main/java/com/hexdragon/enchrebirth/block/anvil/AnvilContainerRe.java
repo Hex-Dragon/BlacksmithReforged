@@ -1,8 +1,8 @@
 package com.hexdragon.enchrebirth.block.anvil;
 
+import com.hexdragon.corere.item.EnchantmentHelperRe;
+import com.hexdragon.corere.item.ItemHelperRe;
 import com.hexdragon.enchrebirth.registry.RegMain;
-import com.hexdragon.util.item.EnchantmentHelperRe;
-import com.hexdragon.util.item.ItemHelperRe;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;

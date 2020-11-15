@@ -1,4 +1,4 @@
-package com.hexdragon.util.network;
+package com.hexdragon.corere.network;
 
 import com.hexdragon.enchrebirth.Main;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -10,7 +10,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public abstract class Packet {
+public abstract class PacketRe {
 
     // 编码方法（解码方法让子类自己写，Java 不允许 Override 一个 Static 方法）
     public abstract void encoder(PacketBuffer buf);
@@ -34,7 +34,7 @@ public abstract class Packet {
 
     // 将数据包发送至特定对象
     // 如果要扩展支持的对象范围，使用不同的 PacketDistributor 即可
-    public void sendToServer() {PacketManager.channel.sendToServer(this);}
-    public void sendToPlayer(ServerPlayerEntity player) {PacketManager.channel.send(PacketDistributor.PLAYER.with(() -> player), this); }
+    public void sendToServer() {PacketManagerRe.channel.sendToServer(this);}
+    public void sendToPlayer(ServerPlayerEntity player) {PacketManagerRe.channel.send(PacketDistributor.PLAYER.with(() -> player), this); }
 
 }

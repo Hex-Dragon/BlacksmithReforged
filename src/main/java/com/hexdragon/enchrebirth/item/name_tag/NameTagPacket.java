@@ -1,7 +1,7 @@
 package com.hexdragon.enchrebirth.item.name_tag;
 
+import com.hexdragon.corere.network.PacketRe;
 import com.hexdragon.enchrebirth.Main;
-import com.hexdragon.util.network.Packet;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -11,7 +11,7 @@ import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 
-public class NameTagPacket extends Packet {
+public class NameTagPacket extends PacketRe {
 
     // 数据包内容
     private final Hand hand; // 修改哪只手上的物品

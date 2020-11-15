@@ -1,4 +1,4 @@
-package com.hexdragon.util.item;
+package com.hexdragon.corere.item;
 
 import com.sun.istack.internal.NotNull;
 import net.minecraft.enchantment.Enchantment;

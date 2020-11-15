@@ -1,11 +1,11 @@
 package com.hexdragon.enchrebirth.registry;
 
+import com.hexdragon.corere.network.PacketManagerRe;
 import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.block.anvil.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.anvil.AnvilScreenRe;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneScreenRe;
 import com.hexdragon.enchrebirth.item.name_tag.NameTagPacket;
-import com.hexdragon.util.network.PacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,8 +36,8 @@ public class RegClient {
 
     @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
         // 注册数据包
-        PacketManager.create(Main.MODID);
-        PacketManager.registerPacket(NameTagPacket.class, NameTagPacket::decoder);
+        PacketManagerRe.create(Main.MODID);
+        PacketManagerRe.registerPacket(NameTagPacket.class, NameTagPacket::decoder);
     }
 
 }
