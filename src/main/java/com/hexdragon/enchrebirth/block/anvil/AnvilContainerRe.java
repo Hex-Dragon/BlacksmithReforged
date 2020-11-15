@@ -17,6 +17,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
 
@@ -99,26 +100,29 @@ public class AnvilContainerRe extends Container {
         }
         ItemStack outputItem = leftItem.copy();
 
+        // 根据腐朽诅咒附魔获取修复比：每级下降 30%
+        final float enchantmentRadio = MathHelper.clamp(1 - Math.max(EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), leftItem), EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), middleItem)) * 0.3f, 0f, 1f);
+
         // 判断配方情况
         if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(leftItem, middleItem)) {
             // 使用原材料修复物品
 
-            // 根据难度获取修复比
+            // 根据难度与附魔获取实际修复比
             final float[] radio = {0};
-            worldPosCallable.consume((world, pos) -> radio[0] = new float[]{1f, 1f, 0.98f, 0.95f}[world.getDifficulty().getId()]);
+            worldPosCallable.consume((world, pos) -> radio[0] = new float[]{1f, 1f, 0.98f, 0.95f}[world.getDifficulty().getId()] * enchantmentRadio);
 
             // 获取每个材料修复的耐久度
-            int decrDamagePerMaterial = (int) Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
-            if (decrDamagePerMaterial <= 0) {
+            int mendingPerMaterial = (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
+            if (mendingPerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
             }
 
             // 获取消耗的材料个数
-            int materialCost;
-            for (materialCost = 0; decrDamagePerMaterial > 0 && materialCost < middleItem.getCount(); ++materialCost) {
-                outputItem.setDamage(outputItem.getDamage() - decrDamagePerMaterial);
-                decrDamagePerMaterial = (int) Math.min(outputItem.getDamage(), outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
+            int materialCost, mending = mendingPerMaterial;
+            for (materialCost = 0; mending > 0 && materialCost < middleItem.getCount(); ++materialCost) {
+                outputItem.setDamage(outputItem.getDamage() - mending);
+                mending = Math.min(outputItem.getDamage(), mendingPerMaterial);
             }
             this.materialCost = materialCost;
 
@@ -138,7 +142,7 @@ public class AnvilContainerRe extends Container {
             // 获取修复后的 Damage
             int dur1 = leftItem.getMaxDamage() - leftItem.getDamage();
             int dur2 = middleItem.getMaxDamage() - middleItem.getDamage();
-            int durNew = dur1 + dur2 + outputItem.getMaxDamage() * radio[0] / 100 + 1;
+            int durNew = (int) (dur1 + (dur2 + outputItem.getMaxDamage() * radio[0] / 100 + 1) * enchantmentRadio);
             int newDamage = outputItem.getMaxDamage() - durNew;
             if (newDamage < 0) newDamage = 0;
             if (newDamage < outputItem.getDamage()) outputItem.setDamage(newDamage);
