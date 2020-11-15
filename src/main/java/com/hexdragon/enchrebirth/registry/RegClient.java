@@ -4,7 +4,8 @@ import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.block.anvil.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.anvil.AnvilScreenRe;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneScreenRe;
-import com.hexdragon.util.network.Networking;
+import com.hexdragon.enchrebirth.item.name_tag.NameTagPacket;
+import com.hexdragon.util.network.PackManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,7 +36,8 @@ public class RegClient {
 
     @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
         // 注册数据包
-        Networking.registerMessage();
+        PackManager.create(Main.MODID);
+        PackManager.registerPack(NameTagPacket.class, NameTagPacket::toBytes, NameTagPacket::new, NameTagPacket::handler);
     }
 
 }
