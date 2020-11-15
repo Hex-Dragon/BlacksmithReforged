@@ -5,7 +5,7 @@ import com.hexdragon.enchrebirth.block.anvil.AnvilRenderer;
 import com.hexdragon.enchrebirth.block.anvil.AnvilScreenRe;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneScreenRe;
 import com.hexdragon.enchrebirth.item.name_tag.NameTagPacket;
-import com.hexdragon.util.network.PackManager;
+import com.hexdragon.util.network.PacketManager;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -19,25 +19,25 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 public class RegClient {
 
     @SubscribeEvent public static void clientSetup(final FMLClientSetupEvent e) {
-        // 注册 Screen
+        // 注册容器的 Screen
         ScreenManager.registerFactory(RegMain.containerGrindstone.get(), GrindstoneScreenRe::new);
         ScreenManager.registerFactory(RegMain.containerAnvil.get(), AnvilScreenRe::new);
     }
 
     @SubscribeEvent public static void onClientEvent(FMLClientSetupEvent event) {
         // 注册 Renderer
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectAnvil.get(), (AnvilRenderer::new));
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedAnvil.get(), (AnvilRenderer::new));
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedAnvil.get(), (AnvilRenderer::new));
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectNetheriteAnvil.get(), (AnvilRenderer::new));
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedNetheriteAnvil.get(), (AnvilRenderer::new));
-        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedNetheriteAnvil.get(), (AnvilRenderer::new));
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectAnvil.get(), AnvilRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedAnvil.get(), AnvilRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedAnvil.get(), AnvilRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityPerfectNetheriteAnvil.get(), AnvilRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityChippedNetheriteAnvil.get(), AnvilRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(RegMain.tileEntityDamagedNetheriteAnvil.get(), AnvilRenderer::new);
     }
 
     @SubscribeEvent public static void onCommonSetup(FMLCommonSetupEvent event) {
         // 注册数据包
-        PackManager.create(Main.MODID);
-        PackManager.registerPack(NameTagPacket.class, NameTagPacket::toBytes, NameTagPacket::new, NameTagPacket::handler);
+        PacketManager.create(Main.MODID);
+        PacketManager.registerPacket(NameTagPacket.class, NameTagPacket::decoder);
     }
 
 }
