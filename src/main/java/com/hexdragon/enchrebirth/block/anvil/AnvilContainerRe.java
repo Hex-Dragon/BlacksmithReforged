@@ -100,8 +100,8 @@ public class AnvilContainerRe extends Container {
         }
         ItemStack outputItem = leftItem.copy();
 
-        // 根据腐朽诅咒附魔获取修复比：每级下降 30%
-        final float enchantmentRadio = MathHelper.clamp(1 - Math.max(EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), leftItem), EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), middleItem)) * 0.3f, 0f, 1f);
+        // 根据腐朽诅咒附魔获取修复比
+        final float enchantmentRadio = MathHelper.clamp(1 - Math.max(EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), leftItem), EnchantmentHelper.getEnchantmentLevel(RegMain.enchDecay.get(), middleItem)) * 0.7f, 0f, 1f);
 
         // 判断配方情况
         if (outputItem.isDamageable() && outputItem.getItem().getIsRepairable(leftItem, middleItem)) {
