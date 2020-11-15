@@ -21,7 +21,7 @@ public class PacketManager {
 
     // 注册数据包
     public static <T extends Packet> void registerPacket(Class<T> messageType, Function<PacketBuffer, T> decoder) {
-        channel.registerMessage(nextID(), messageType, T::encoder, decoder, T::onServerReceivePacketConsumer);
+        channel.registerMessage(nextID(), messageType, T::encoder, decoder, T::onReceivePacket);
     }
 
 }

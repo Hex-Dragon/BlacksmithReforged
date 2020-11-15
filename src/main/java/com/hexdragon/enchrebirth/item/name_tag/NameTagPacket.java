@@ -10,8 +10,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.util.function.Supplier;
-
 public class NameTagPacket extends Packet {
 
     // 数据包内容
@@ -26,20 +24,23 @@ public class NameTagPacket extends Packet {
     public static NameTagPacket decoder(PacketBuffer buffer) {
         return new NameTagPacket(buffer.readString(Short.MAX_VALUE), buffer.readEnumValue(Hand.class));
     }
-    public void encoder(PacketBuffer buf) {
+    @Override public void encoder(PacketBuffer buf) {
         buf.writeString(this.displayName);
         buf.writeEnumValue(this.hand);
     }
 
-    // 服务端接收到数据包的事件处理
-    public void onServerReceivePacket(Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayerEntity player = ctx.get().getSender();
+    // 接收到数据包的事件处理
+    @Override public void onServerReceivePacket(NetworkEvent.Context ctx) {
+        ServerPlayerEntity player = ctx.getSender();
         ItemStack item = player.getHeldItem(this.hand);
         if (item.getItem() == Items.NAME_TAG) { // 检查物品，避免客户端通过伪造数据包作弊
             item.setDisplayName(new StringTextComponent(this.displayName));
         } else {
-            Main.LOGGER.warn("接收到修改命名牌名称的数据包，但玩家并未手持命名牌：" + this.displayName);
+            Main.LOGGER.warn("接收到修改命名牌名称的数据包，但玩家并未手持命名牌");
         }
+    }
+    @Override public void onClientReceivePacket(NetworkEvent.Context ctx) {
+        Main.LOGGER.warn("客户端接收到了修改命名牌名称的数据包，它应该发送给服务端");
     }
 
 }
