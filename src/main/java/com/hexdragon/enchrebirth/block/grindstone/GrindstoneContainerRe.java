@@ -113,9 +113,9 @@ public class GrindstoneContainerRe extends Container {
     private ItemStack prepareNewItem(ItemStack stack) {
         ItemStack itemstack = stack.copy();
         itemstack.setCount(1);
-        // 普通难度下消耗 0.3 个物品原料的耐久
+        // 普通难度下消耗 0.4 个物品原料的耐久
         final float[] radio = {0};
-        worldPosCallable.consume((world, pos) -> radio[0] = new float[]{0f, 0f, 0.3f, 0.6f}[world.getDifficulty().getId()]);
+        worldPosCallable.consume((world, pos) -> radio[0] = new float[]{0.2f, 0.3f, 0.4f, 0.5f}[world.getDifficulty().getId()]);
         // 设置损伤值
         int newDamage = Math.min(itemstack.getMaxDamage(),
                 itemstack.getDamage() + (int) (itemstack.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(itemstack) * radio[0]));
