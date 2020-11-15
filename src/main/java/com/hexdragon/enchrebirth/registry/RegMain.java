@@ -5,9 +5,11 @@ import com.hexdragon.enchrebirth.block.anvil.AnvilContainerRe;
 import com.hexdragon.enchrebirth.block.anvil.AnvilTileEntity;
 import com.hexdragon.enchrebirth.block.anvil.NetheriteAnvil;
 import com.hexdragon.enchrebirth.block.grindstone.GrindstoneContainerRe;
+import com.hexdragon.enchrebirth.enchantment.DecayCurseEnchantment;
 import com.hexdragon.enchrebirth.item.name_tag.NameTagRenameRecipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
@@ -55,5 +57,9 @@ public class RegMain {
 
     // BlockState
     public static final IntegerProperty blockStateMaterial = IntegerProperty.create("material", 0, 1);
+
+    // 附魔
+    public static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(ForgeRegistries.ENCHANTMENTS, Main.MODID);
+    public static final RegistryObject<Enchantment> enchDecay = ENCHANTMENTS.register("decay_curse", DecayCurseEnchantment::new);
 
 }

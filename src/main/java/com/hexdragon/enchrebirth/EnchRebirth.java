@@ -14,5 +14,6 @@ public class EnchRebirth {
         RegMain.ITEMS.register(modEventBus);
         RegMain.CONTAINERS.register(modEventBus);
         RegMain.TILE_ENTITIES.register(modEventBus);
+        RegMain.ENCHANTMENTS.register(modEventBus);
     }
 }
