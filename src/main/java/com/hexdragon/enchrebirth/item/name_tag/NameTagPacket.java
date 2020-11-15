@@ -8,7 +8,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+
+import javax.annotation.Nullable;
 
 public class NameTagPacket extends Packet {
 
@@ -30,16 +31,15 @@ public class NameTagPacket extends Packet {
     }
 
     // 接收到数据包的事件处理
-    @Override public void onServerReceivePacket(NetworkEvent.Context ctx) {
-        ServerPlayerEntity player = ctx.getSender();
-        ItemStack item = player.getHeldItem(this.hand);
+    @Override public void onServerReceivePacket(@Nullable ServerPlayerEntity senderPlayer) {
+        ItemStack item = senderPlayer.getHeldItem(this.hand);
         if (item.getItem() == Items.NAME_TAG) { // 检查物品，避免客户端通过伪造数据包作弊
             item.setDisplayName(new StringTextComponent(this.displayName));
         } else {
             Main.LOGGER.warn("接收到修改命名牌名称的数据包，但玩家并未手持命名牌");
         }
     }
-    @Override public void onClientReceivePacket(NetworkEvent.Context ctx) {
+    @Override public void onClientReceivePacket(@Nullable ServerPlayerEntity senderPlayer) {
         Main.LOGGER.warn("客户端接收到了修改命名牌名称的数据包，它应该发送给服务端");
     }
 
