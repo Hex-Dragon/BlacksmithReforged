@@ -29,8 +29,8 @@ public abstract class Packet {
     }
 
     // 接收到数据包的处理
-    public abstract void onServerReceivePacket(@Nullable ServerPlayerEntity senderPlayer);
-    public abstract void onClientReceivePacket(@Nullable ServerPlayerEntity senderPlayer);
+    public void onServerReceivePacket(@Nullable ServerPlayerEntity senderPlayer) {Main.LOGGER.warn("服务端接收到了未经子类处理的数据包，它可能应该发送给服务端");}
+    public void onClientReceivePacket(@Nullable ServerPlayerEntity senderPlayer) {Main.LOGGER.warn("客户端接收到了未经子类处理的数据包，它可能应该发送给服务端");}
 
     // 将数据包发送至特定对象
     // 如果要扩展支持的对象范围，使用不同的 PacketDistributor 即可

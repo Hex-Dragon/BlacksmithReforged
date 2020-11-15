@@ -39,8 +39,5 @@ public class NameTagPacket extends Packet {
             Main.LOGGER.warn("接收到修改命名牌名称的数据包，但玩家并未手持命名牌");
         }
     }
-    @Override public void onClientReceivePacket(@Nullable ServerPlayerEntity senderPlayer) {
-        Main.LOGGER.warn("客户端接收到了修改命名牌名称的数据包，它应该发送给服务端");
-    }
 
 }
