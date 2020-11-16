@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftResultInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -30,19 +29,20 @@ public class AnvilContainerRe extends Container {
     public final IWorldPosCallable worldPosCallable;
     private final PlayerEntity player;
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
-        this(id, playerInventory, IWorldPosCallable.DUMMY);
+        // 当从 Screen 渲染线程触发，就会从这里进行调用
+        this(id, playerInventory, IWorldPosCallable.DUMMY, new AnvilTileEntity(RegMain.tileEntityPerfectAnvil.get()));
     }
-    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable) {
+    public AnvilContainerRe(int id, PlayerInventory playerInventory, IWorldPosCallable worldPosCallable, AnvilTileEntity tileEntity) {
         super(RegMain.containerAnvil.get(), id);
         this.worldPosCallable = worldPosCallable;
         this.player = playerInventory.player;
-        worldPosCallable.consume((world, blockPos) -> this.inputInventory = (AnvilTileEntity) world.getTileEntity(blockPos)); // 与 NBT 中的物品栏同步
+        this.inputInventory = tileEntity; // 与 NBT 中的物品栏同步
         Constuct(playerInventory);
         onCraftMatrixChanged(inputInventory); // 初始化输出
     }
 
     // 输入与输出物品槽
-    public IInventory inputInventory = new Inventory(2);
+    public AnvilTileEntity inputInventory;
     public final CraftResultInventory outputInventory = new CraftResultInventory();
 
     // 构造页面槽位

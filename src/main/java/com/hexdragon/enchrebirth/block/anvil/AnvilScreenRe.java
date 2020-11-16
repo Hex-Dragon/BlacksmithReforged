@@ -35,12 +35,12 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
         if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
             this.blit(matrixStack, i + 103, j + 26, this.xSize, 0, 28, 21);
         }
-        // 获取当前铁砧的物品
-        final ItemStack[] stack = new ItemStack[1];
-        this.container.worldPosCallable.consume((world, blockPos) -> stack[0] = new ItemStack(world.getTileEntity(blockPos).getBlockState().getBlock().asItem()));
-        if (stack[0] == null) stack[0] = new ItemStack(RegMain.itemDamagedNetheriteAnvil.get()); // 获取失败就渲染…… 测试用
+        // TODO : 获取当前铁砧对应的物品（很头大，因为它实际上调用的 AnvilContainerRe 的第一个构造函数，所以很难获取信息）
+        ItemStack stack = null;
+        // stack = new ItemStack(this.container.inputInventory.getType().);
+        if (stack == null) stack = new ItemStack(RegMain.itemDamagedNetheriteAnvil.get()); // 获取失败就渲染…… 测试用
         // 渲染这个物品
-        ItemRendererRe.renderItemModelIntoGUIScaled(this.itemRenderer, stack[0], i + 21, j + 15, 64);
+        ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, stack, i + 21, j + 15, 64);
     }
 
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {

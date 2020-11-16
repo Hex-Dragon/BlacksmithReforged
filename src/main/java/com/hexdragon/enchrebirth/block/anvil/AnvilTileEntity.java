@@ -87,7 +87,7 @@ public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInv
         world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE); // 通知客户端更新物品模型渲染
     }
     protected Container createMenu(int id, PlayerInventory player) {
-        AnvilContainerRe container = new AnvilContainerRe(id, player, IWorldPosCallable.of(this.world, this.pos));
+        AnvilContainerRe container = new AnvilContainerRe(id, player, IWorldPosCallable.of(this.world, this.pos), this);
         this.container = container;
         return container;
     }
