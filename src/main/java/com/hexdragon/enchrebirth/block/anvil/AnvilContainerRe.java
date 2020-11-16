@@ -27,7 +27,7 @@ import java.util.Map;
 public class AnvilContainerRe extends Container {
 
     // 构造函数
-    private final IWorldPosCallable worldPosCallable;
+    public final IWorldPosCallable worldPosCallable;
     private final PlayerEntity player;
     public AnvilContainerRe(int id, PlayerInventory playerInventory) {
         this(id, playerInventory, IWorldPosCallable.DUMMY);

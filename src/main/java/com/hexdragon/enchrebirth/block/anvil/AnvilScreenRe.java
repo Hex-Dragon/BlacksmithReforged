@@ -1,11 +1,13 @@
 package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.enchrebirth.Main;
+import com.hexdragon.enchrebirth.registry.RegMain;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -32,6 +34,12 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
         if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
             this.blit(matrixStack, i + 103, j + 26, this.xSize, 0, 28, 21);
         }
+        // 渲染当前铁砧的物品
+        this.itemRenderer.zLevel = 100.0F;
+        final ItemStack[] stack = new ItemStack[1];
+        this.container.worldPosCallable.consume((world, blockPos) -> stack[0] = new ItemStack(world.getTileEntity(blockPos).getBlockState().getBlock().asItem()));
+        this.itemRenderer.renderItemAndEffectIntoGUI(new ItemStack(RegMain.itemDamagedNetheriteAnvil.get()), i + 20, j + 109);
+        this.itemRenderer.zLevel = 0.0F;
     }
 
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
