@@ -2,7 +2,6 @@ package com.hexdragon.enchrebirth.block.anvil;
 
 import com.hexdragon.corere.renderer.ItemRendererRe;
 import com.hexdragon.enchrebirth.Main;
-import com.hexdragon.enchrebirth.registry.RegMain;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
@@ -35,12 +34,13 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
         if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
             this.blit(matrixStack, i + 103, j + 26, this.xSize, 0, 28, 21);
         }
-        // TODO : 获取当前铁砧对应的物品（很头大，因为它实际上调用的 AnvilContainerRe 的第一个构造函数，所以很难获取信息）
-        ItemStack stack = null;
-        // stack = new ItemStack(this.container.inputInventory.getType().);
-        if (stack == null) stack = new ItemStack(RegMain.itemDamagedNetheriteAnvil.get()); // 获取失败就渲染…… 测试用
-        // 渲染这个物品
-        ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, stack, i + 21, j + 15, 64);
+        // TODO : 当铁砧破坏等级增加的时候存储的物品会掉出来
+        // TODO : 带有腐朽附魔的物品在满耐久的时候和原料一起放入铁砧允许修复，而不是打上红叉
+        // TODO : <验证> 检查使用 Main 获取 TileEntity 的方式是否会在多人造成兼容性问题
+        // TODO : 尝试找到更简洁的当前打开的 Block 的获取方式
+        // TODO : Timicasto 汇报的 Bug：按 Shift 转移物品容易崩溃？
+        // 渲染当前的 TileEntity
+        ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, new ItemStack(Main.LastTileEntity.getBlockState().getBlock()), i + 21, j + 15, 64);
     }
 
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {

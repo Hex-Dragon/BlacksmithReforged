@@ -1,5 +1,6 @@
 package com.hexdragon.enchrebirth.block.anvil;
 
+import com.hexdragon.enchrebirth.Main;
 import com.hexdragon.enchrebirth.registry.RegMain;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
@@ -88,6 +89,7 @@ public class AnvilTileEntity extends LockableLootTileEntity implements ISidedInv
     }
     protected Container createMenu(int id, PlayerInventory player) {
         AnvilContainerRe container = new AnvilContainerRe(id, player, IWorldPosCallable.of(this.world, this.pos), this);
+        Main.LastTileEntity = this;
         this.container = container;
         return container;
     }
