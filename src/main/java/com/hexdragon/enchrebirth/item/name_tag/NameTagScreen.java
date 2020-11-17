@@ -1,10 +1,13 @@
 package com.hexdragon.enchrebirth.item.name_tag;
 
+import com.hexdragon.corere.renderer.ItemRendererRe;
 import com.hexdragon.enchrebirth.Main;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
@@ -53,6 +56,8 @@ public class NameTagScreen extends Screen {
         // 绘制文本框
         this.textField.render(matrixStack, mouseX, mouseY, partialTicks);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+        // 渲染背景物品
+        ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, new ItemStack(Items.NAME_TAG), guiLeft + 25, guiTop + 19, 34);
     }
 
     // 在玩家按下物品栏键或回车时，主动关闭 GUI

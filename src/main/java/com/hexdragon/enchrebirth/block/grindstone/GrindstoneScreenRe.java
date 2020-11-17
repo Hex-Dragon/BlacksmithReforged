@@ -1,9 +1,12 @@
 package com.hexdragon.enchrebirth.block.grindstone;
 
+import com.hexdragon.corere.renderer.ItemRendererRe;
 import com.hexdragon.enchrebirth.Main;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
@@ -37,5 +40,7 @@ public class GrindstoneScreenRe extends ContainerScreen<GrindstoneContainerRe> {
         if (this.container.getSlot(0).getHasStack() ^ (this.container.getSlot(1).getHasStack() || this.container.getSlot(2).getHasStack())) {
             this.blit(matrixStack, i + 85, j + 26, this.xSize, 0, 28, 21);
         }
+        // 渲染背景物品
+        ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, new ItemStack(Items.GRINDSTONE), i + 23, j + 21, 48);
     }
 }

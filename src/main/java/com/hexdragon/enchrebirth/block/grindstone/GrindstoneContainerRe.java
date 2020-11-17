@@ -105,7 +105,6 @@ public class GrindstoneContainerRe extends Container {
         this.detectAndSendChanges();
     }
 
-    // TODO : 将铁砧、砂轮、命名牌 GUI 左侧的图片对应换成渲染的物品模型
     // TODO : 添加方块的使用音效、命名牌的重命名音效什么的
     // TODO : 让砂轮可以去除附魔书的附魔，返回一个皮革
 
