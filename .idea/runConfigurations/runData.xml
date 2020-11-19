@@ -10,7 +10,7 @@
       <env name="MC_VERSION" value="1.16.3" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="net.minecraftforge.userdev.LaunchTesting" />
-    <module name="Enchanting_Rebirth.main" />
+    <module name="Blacksmith_Rebirth.main" />
     <option name="PROGRAM_PARAMETERS" value="--mod enchrebirth --all --output $PROJECT_DIR$/src/generated/resources --existing $PROJECT_DIR$/src/main/resources" />
     <option name="VM_PARAMETERS" value="-Dforge.logging.markers=SCAN,REGISTRIES,REGISTRYDUMP" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
