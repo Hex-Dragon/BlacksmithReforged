@@ -1,0 +1,10 @@
+{
+  "gui.grindstone.title": "去除附魔",
+  "gui.anvil.title": "修复物品",
+  "gui.name_tag.title": "重命名",
+  "block.blacksmithre.netherite_anvil": "下界合金砧",
+  "block.blacksmithre.chipped_netherite_anvil": "开裂的下界合金砧",
+  "block.blacksmithre.damaged_netherite_anvil": "损坏的下界合金砧",
+  "enchantment.blacksmithre.decay_curse": "腐朽诅咒",
+  "enchantment.blacksmithre.decay_curse.desc": "让物品更难以被修复"
+}

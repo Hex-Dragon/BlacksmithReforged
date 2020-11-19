@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.hexdragon.blacksmithre.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "RepairItemRecipeMixin",
+    "block/GrindstoneBlockMixin",
+    "block/AnvilBlockMixin",
+    "item/NameTagItemMixin"
+  ]
+}

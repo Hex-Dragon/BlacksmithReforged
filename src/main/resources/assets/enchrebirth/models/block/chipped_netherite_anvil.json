@@ -1,6 +1,0 @@
-{
-  "parent": "enchrebirth:block/template_netherite_anvil",
-  "textures": {
-    "top": "enchrebirth:block/chipped_netherite_anvil_top"
-  }
-}

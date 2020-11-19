@@ -1,6 +1,6 @@
 package com.hexdragon.corere.network;
 
-import com.hexdragon.enchrebirth.Main;
+import com.hexdragon.blacksmithre.Main;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkDirection;

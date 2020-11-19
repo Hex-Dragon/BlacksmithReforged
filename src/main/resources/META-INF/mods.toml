@@ -15,11 +15,11 @@ license = "All rights reserved" #mandatory
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId = "enchrebirth" #mandatory
+modId = "blacksmithre" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version = "0.0.2.0" #mandatory
 # A display name for the mod
-displayName = "Enchanting Rebirth" #mandatory
+displayName = "Blacksmith: Rebirth" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
 #updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
@@ -35,7 +35,7 @@ description = '''
 by LTCat, 00ll00 and HerobrineXia
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.enchrebirth]] #optional
+[[dependencies.blacksmithre]] #optional
 # the modid of the dependency
 modId = "forge" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
@@ -47,7 +47,7 @@ ordering = "NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
 side = "BOTH"
 # Here's another dependency
-[[dependencies.enchrebirth]]
+[[dependencies.blacksmithre]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.16.3]"

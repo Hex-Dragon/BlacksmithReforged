@@ -14,8 +14,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
 version = '1.0'
-group = 'com.hexdragon.ench' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'enchrebirth'
+group = 'com.hexdragon.blacksmithre' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'blacksmithre'
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
@@ -76,7 +76,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'enchrebirth', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            args '--mod', 'blacksmithre', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
                 examplemod {
@@ -120,12 +120,12 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "enchrebirth",
-            "Specification-Vendor": "enchrebirthv",
+            "Specification-Title": "blacksmithre",
+            "Specification-Vendor": "blacksmithrev",
             "Specification-Version": "1", // We are version 1 of ourselves
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"enchrebirthv",
+            "Implementation-Vendor" :"blacksmithrev",
             "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

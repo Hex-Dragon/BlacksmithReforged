@@ -1,0 +1,6 @@
+{
+  "parent": "blacksmithre:block/template_netherite_anvil",
+  "textures": {
+    "top": "blacksmithre:block/chipped_netherite_anvil_top"
+  }
+}
