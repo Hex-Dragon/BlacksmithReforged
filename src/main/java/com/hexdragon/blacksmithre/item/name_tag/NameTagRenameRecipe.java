@@ -44,7 +44,7 @@ public class NameTagRenameRecipe extends SpecialRecipe {
         }
         // 设置名称并返回
         if (target == null || newName == null) return ItemStack.EMPTY;
-        target.setDisplayName(newName);
+        target.setDisplayName(newName).setCount(1);
         return target;
     }
 
