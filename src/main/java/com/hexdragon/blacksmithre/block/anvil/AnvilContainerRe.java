@@ -15,7 +15,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
@@ -164,6 +167,22 @@ public class AnvilContainerRe extends Container {
     // 在玩家从输出格拿走物品时触发：损坏铁砧、清空输入
     private ItemStack onTakeOutput(PlayerEntity player, ItemStack itemStack) {
 
+        // 清空输入
+        if (this.materialCost > 0) {
+            boolean reverseInput = !this.inputInventory.getStackInSlot(0).isDamageable();
+            this.inputInventory.setInventorySlotContents(reverseInput ? 1 : 0, ItemStack.EMPTY);
+            ItemStack itemstack = this.inputInventory.getStackInSlot(reverseInput ? 0 : 1);
+            if (!itemstack.isEmpty() && itemstack.getCount() > this.materialCost) {
+                itemstack.shrink(this.materialCost);
+                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, itemstack);
+            } else {
+                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, ItemStack.EMPTY);
+            }
+        } else {
+            this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
+            this.inputInventory.setInventorySlotContents(1, ItemStack.EMPTY);
+        }
+
         // 触发铁砧的随机损坏
         // 对于原版：“平均每个铁砧能用 25 次，相当于每用一次铁砧就消耗了 1.24 个用于合成铁砧的铁锭”
         float baseBreakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(player, itemStack, AnvilContainerRe.this.inputInventory.getStackInSlot(0), AnvilContainerRe.this.inputInventory.getStackInSlot(1));
@@ -187,22 +206,6 @@ public class AnvilContainerRe extends Container {
                 world.playEvent(1030, blockPos, 0);
             }
         });
-
-        // 清空输入
-        if (this.materialCost > 0) {
-            boolean reverseInput = !this.inputInventory.getStackInSlot(0).isDamageable();
-            this.inputInventory.setInventorySlotContents(reverseInput ? 1 : 0, ItemStack.EMPTY);
-            ItemStack itemstack = this.inputInventory.getStackInSlot(reverseInput ? 0 : 1);
-            if (!itemstack.isEmpty() && itemstack.getCount() > this.materialCost) {
-                itemstack.shrink(this.materialCost);
-                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, itemstack);
-            } else {
-                this.inputInventory.setInventorySlotContents(reverseInput ? 0 : 1, ItemStack.EMPTY);
-            }
-        } else {
-            this.inputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
-            this.inputInventory.setInventorySlotContents(1, ItemStack.EMPTY);
-        }
 
         return itemStack;
     }
