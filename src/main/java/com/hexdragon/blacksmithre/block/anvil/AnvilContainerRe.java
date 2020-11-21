@@ -200,6 +200,7 @@ public class AnvilContainerRe extends Container {
                     world.removeBlock(blockPos, false);
                     world.playEvent(1029, blockPos, 0);
                 } else {
+                    // TODO : <验证> 铁砧损坏等级增加时的物品处理是否在多人工作正常
                     //保存当前物品
                     AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
                     ItemStack itemStack0 = tileEntity.getItems().get(0).copy();
