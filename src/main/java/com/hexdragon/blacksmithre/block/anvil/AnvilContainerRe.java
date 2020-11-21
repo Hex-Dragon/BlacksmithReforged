@@ -20,6 +20,7 @@ import net.minecraft.nbt.StringNBT;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
@@ -199,7 +200,21 @@ public class AnvilContainerRe extends Container {
                     world.removeBlock(blockPos, false);
                     world.playEvent(1029, blockPos, 0);
                 } else {
+                    //保存当前物品
+                    AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
+                    ItemStack itemStack0 = tileEntity.getItems().get(0).copy();
+                    ItemStack itemStack1 = tileEntity.getItems().get(1).copy();
+                    //清空物品，避免爆出
+                    tileEntity.inventory.clear();
+
+                    //放置损坏后的方块，放回物品
                     world.setBlockState(blockPos, blockstate1, 2);
+                    AnvilTileEntity tileEntity1 = (AnvilTileEntity) world.getTileEntity(blockPos);
+                    tileEntity1.inventory.set(0,itemStack0);
+                    tileEntity1.inventory.set(1,itemStack1);
+                    tileEntity1.markDirty();
+                    //玩家更新GUI
+                    player.openContainer(tileEntity1.getBlockState().getContainer(world,blockPos));
                     world.playEvent(1030, blockPos, 0);
                 }
             } else {
