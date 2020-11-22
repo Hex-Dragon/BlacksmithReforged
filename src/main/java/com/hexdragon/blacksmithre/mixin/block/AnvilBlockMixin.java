@@ -88,11 +88,17 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         builder.add(RegMain.blockStateMaterial);
     }
 
-    // 阻止下界合金砧因为摔落而损坏
+    // 设置下界合金砧的损坏
     @Inject(method = "damage", at = @At(value = "HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private static void damage(BlockState state, CallbackInfoReturnable<BlockState> cir) {
-        if (state.isIn(RegMain.blockDamagedNetheriteAnvil.get()) || state.isIn(RegMain.blockChippedNetheriteAnvil.get()) || state.isIn(RegMain.blockPerfectNetheriteAnvil.get())) {
-            cir.setReturnValue(state.getBlock().getDefaultState().with(FACING, state.get(FACING)));
+        if (state.isIn(RegMain.blockPerfectNetheriteAnvil.get())) {
+            cir.setReturnValue(RegMain.blockChippedNetheriteAnvil.get().getDefaultState().with(FACING, state.get(FACING)));
+            cir.cancel();
+        } else if (state.isIn(RegMain.blockChippedNetheriteAnvil.get())) {
+            cir.setReturnValue(RegMain.blockDamagedNetheriteAnvil.get().getDefaultState().with(FACING, state.get(FACING)));
+            cir.cancel();
+        } else if (state.isIn(RegMain.blockDamagedNetheriteAnvil.get())) {
+            cir.setReturnValue(null);
             cir.cancel();
         }
     }
