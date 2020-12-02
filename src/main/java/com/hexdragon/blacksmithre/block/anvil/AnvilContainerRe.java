@@ -215,7 +215,7 @@ public class AnvilContainerRe extends Container {
                     newTileEntity.inventory.set(1, itemStack1);
                     newTileEntity.markDirty();
                     // 让玩家再次打开 GUI
-                    // TODO : 想办法让玩家的鼠标在铁砧损坏时不会移动到中心（因为实际上 GUI 已经被关闭后重新打开了）
+                    // TODO : 想办法让玩家的鼠标在铁砧损坏时不会移动到中心（因为实际上 GUI 已经被关闭后重新打开了）；同时确认玩家手持的物品会不会因为 GUI 关闭变成掉落物
                     player.openContainer(newTileEntity.getBlockState().getContainer(world, blockPos));
                     world.playEvent(1030, blockPos, 0);
                 }

@@ -106,7 +106,6 @@ public class GrindstoneContainerRe extends Container {
     }
 
     // TODO : 添加方块的使用音效、命名牌的重命名音效什么的
-    // TODO : 让砂轮可以去除附魔书的附魔，返回一个皮革
 
     // 对砂轮的单个物品进行预处理：例如移除非诅咒附魔、重置修复消耗等
     private ItemStack prepareNewItem(ItemStack stack) {
