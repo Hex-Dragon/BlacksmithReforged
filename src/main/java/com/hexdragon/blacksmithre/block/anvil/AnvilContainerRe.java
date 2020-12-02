@@ -201,7 +201,7 @@ public class AnvilContainerRe extends Container {
                     world.playEvent(1029, blockPos, 0);
                 } else {
                     // TODO : <验证> 铁砧损坏等级增加时的物品处理是否在多人工作正常
-                    // TODO : 解决 Mixin config mixins.blacksmithre.json does not specify "minVersion" property
+                    // TODO : <验证> Mixin config mixins.blacksmithre.json "minVersion" 定为0.8是否合理
                     // 保存当前物品并清空物品栏，避免在更改方块时爆出
                     AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
                     ItemStack itemStack0 = tileEntity.getItems().get(0).copy();
