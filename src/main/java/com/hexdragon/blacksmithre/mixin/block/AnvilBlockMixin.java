@@ -107,28 +107,9 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
         }
     }
 
-    //设置红石比较器输出
-    public boolean hasComparatorInputOverride(BlockState state) {
-        return true;
-    }
-    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
-        AnvilTileEntity tileEntity = (AnvilTileEntity) worldIn.getTileEntity(pos);
-
-        //@see Container.calcRedstoneFromInventory()
-        int i = 0;
-        float f = 0.0F;
-
-        for(int j = 0; j < tileEntity.getSizeInventory(); ++j) {
-            ItemStack itemstack = tileEntity.inventory.get(j);
-            if (!itemstack.isEmpty()) {
-                f += (float)itemstack.getCount() / (float)itemstack.getMaxStackSize();
-                ++i;
-            }
-        }
-
-        f = f / (float)tileEntity.getSizeInventory();
-        return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
-    }
+    // 设置红石比较器输出
+    public boolean hasComparatorInputOverride(BlockState state) {return true;}
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {return Container.calcRedstone(worldIn.getTileEntity(pos));}
 
 
     // TODO : <验证> 多个玩家同时打开物品栏是否有刷物品 Bug 的可能？
