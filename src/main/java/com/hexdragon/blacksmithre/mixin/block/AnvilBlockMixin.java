@@ -4,12 +4,15 @@ import com.hexdragon.blacksmithre.block.anvil.AnvilTileEntity;
 import com.hexdragon.blacksmithre.registry.RegMain;
 import net.minecraft.block.*;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -17,6 +20,7 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.extensions.IForgeBlock;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -102,6 +106,30 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
             cir.cancel();
         }
     }
+
+    //设置红石比较器输出
+    public boolean hasComparatorInputOverride(BlockState state) {
+        return true;
+    }
+    public int getComparatorInputOverride(BlockState blockState, World worldIn, BlockPos pos) {
+        AnvilTileEntity tileEntity = (AnvilTileEntity) worldIn.getTileEntity(pos);
+
+        //@see Container.calcRedstoneFromInventory()
+        int i = 0;
+        float f = 0.0F;
+
+        for(int j = 0; j < tileEntity.getSizeInventory(); ++j) {
+            ItemStack itemstack = tileEntity.inventory.get(j);
+            if (!itemstack.isEmpty()) {
+                f += (float)itemstack.getCount() / (float)itemstack.getMaxStackSize();
+                ++i;
+            }
+        }
+
+        f = f / (float)tileEntity.getSizeInventory();
+        return MathHelper.floor(f * 14.0F) + (i > 0 ? 1 : 0);
+    }
+
 
     // TODO : <验证> 多个玩家同时打开物品栏是否有刷物品 Bug 的可能？
     // TODO : 破坏下界合金砧没有掉落物（加了 LootTable 也没啥用）
