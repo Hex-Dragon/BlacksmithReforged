@@ -117,7 +117,7 @@ public class AnvilContainerRe extends Container {
             worldPosCallable.consume((world, pos) -> radio[0] = new float[]{1f, 1f, 0.98f, 0.95f}[world.getDifficulty().getId()] * enchantmentRadio);
 
             // 获取每个材料修复的耐久度
-            int mendingPerMaterial = (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemMaterialCost(outputItem) * radio[0]);
+            int mendingPerMaterial = (int) (outputItem.getMaxDamage() / ItemHelperRe.getDamageableItemRepairCost(outputItem) * radio[0]);
             if (mendingPerMaterial <= 0) {
                 this.outputInventory.setInventorySlotContents(0, ItemStack.EMPTY);
                 return;
@@ -201,7 +201,6 @@ public class AnvilContainerRe extends Container {
                     world.playEvent(1029, blockPos, 0);
                 } else {
                     // TODO : <验证> 铁砧损坏等级增加时的物品处理是否在多人工作正常
-                    // TODO : <验证> Mixin config mixins.blacksmithre.json "minVersion" 定为0.8是否合理
                     // 保存当前物品并清空物品栏，避免在更改方块时爆出
                     AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
                     ItemStack itemStack0 = tileEntity.getItems().get(0).copy();

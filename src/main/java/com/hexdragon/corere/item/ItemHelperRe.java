@@ -5,10 +5,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraftforge.common.ToolType;
+import org.lwjgl.system.CallbackI;
 
 public class ItemHelperRe {
 
-    // 合成某个可损坏的物品大致需要的最珍贵原料数，返回值并不准确，只适合用于估计
+    // 完全修复某个可损坏的物品大致需要的珍贵原料数，返回值并不准确，只适合用于估计
+    public static float getDamageableItemRepairCost(ItemStack itemStack) {
+        // 一个下界合金视作 3 个原材料
+        boolean isNetherite = itemStack.getItem().getIsRepairable(itemStack, new ItemStack(Items.NETHERITE_INGOT));
+        return getDamageableItemMaterialCost(itemStack) / (isNetherite ? 3f : 1f);
+    }
+
+    // 合成某个可损坏的物品大致需要的珍贵原料数（下界合金为其对应的钻石物品），返回值并不准确，只适合用于估计
     public static int getDamageableItemMaterialCost(ItemStack itemStack) {
         Item item = itemStack.getItem();
         // 根据工具种类判断
