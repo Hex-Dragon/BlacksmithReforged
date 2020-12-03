@@ -114,5 +114,6 @@ public abstract class AnvilBlockMixin extends FallingBlock implements IForgeBloc
 
     // TODO : <验证> 多个玩家同时打开物品栏是否有刷物品 Bug 的可能？
     // TODO : [010] 绘制下界合金砧的材质（也可以修改原版铁砧的材质以让它有更大的区分度？）
+    // TODO : [010] 开裂的下界合金砧等依然使用的原本模型
 
 }

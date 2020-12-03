@@ -3,7 +3,7 @@ package com.hexdragon.blacksmithre.registry;
 import com.hexdragon.blacksmithre.Main;
 import com.hexdragon.blacksmithre.block.anvil.AnvilContainerRe;
 import com.hexdragon.blacksmithre.block.anvil.AnvilTileEntity;
-import com.hexdragon.blacksmithre.block.anvil.NetheriteAnvil;
+import com.hexdragon.blacksmithre.block.anvil.NetheriteAnvilBlock;
 import com.hexdragon.blacksmithre.block.grindstone.GrindstoneContainerRe;
 import com.hexdragon.blacksmithre.enchantment.DecayCurseEnchantment;
 import com.hexdragon.blacksmithre.item.name_tag.NameTagRenameRecipe;
@@ -27,15 +27,15 @@ public class RegMain {
 
     // 方块
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Main.MODID);
-    public static final RegistryObject<Block> blockPerfectNetheriteAnvil = BLOCKS.register("netherite_anvil", NetheriteAnvil::new);
-    public static final RegistryObject<Block> blockChippedNetheriteAnvil = BLOCKS.register("chipped_netherite_anvil", NetheriteAnvil::new);
-    public static final RegistryObject<Block> blockDamagedNetheriteAnvil = BLOCKS.register("damaged_netherite_anvil", NetheriteAnvil::new);
+    public static final RegistryObject<Block> blockPerfectNetheriteAnvil = BLOCKS.register("netherite_anvil", NetheriteAnvilBlock::new);
+    public static final RegistryObject<Block> blockChippedNetheriteAnvil = BLOCKS.register("chipped_netherite_anvil", NetheriteAnvilBlock::new);
+    public static final RegistryObject<Block> blockDamagedNetheriteAnvil = BLOCKS.register("damaged_netherite_anvil", NetheriteAnvilBlock::new);
 
     // 物品
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Main.MODID);
-    public static final RegistryObject<Item> itemPerfectNetheriteAnvil = ITEMS.register("netherite_anvil", () -> new NetheriteAnvil.NetheriteAnvilItem(blockPerfectNetheriteAnvil.get()));
-    public static final RegistryObject<Item> itemChippedNetheriteAnvil = ITEMS.register("chipped_netherite_anvil", () -> new NetheriteAnvil.NetheriteAnvilItem(blockChippedNetheriteAnvil.get()));
-    public static final RegistryObject<Item> itemDamagedNetheriteAnvil = ITEMS.register("damaged_netherite_anvil", () -> new NetheriteAnvil.NetheriteAnvilItem(blockDamagedNetheriteAnvil.get()));
+    public static final RegistryObject<Item> itemPerfectNetheriteAnvil = ITEMS.register("netherite_anvil", () -> new NetheriteAnvilBlock.NetheriteAnvilItem(blockPerfectNetheriteAnvil.get()));
+    public static final RegistryObject<Item> itemChippedNetheriteAnvil = ITEMS.register("chipped_netherite_anvil", () -> new NetheriteAnvilBlock.NetheriteAnvilItem(blockChippedNetheriteAnvil.get()));
+    public static final RegistryObject<Item> itemDamagedNetheriteAnvil = ITEMS.register("damaged_netherite_anvil", () -> new NetheriteAnvilBlock.NetheriteAnvilItem(blockDamagedNetheriteAnvil.get()));
 
     // Container
     public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Main.MODID);
