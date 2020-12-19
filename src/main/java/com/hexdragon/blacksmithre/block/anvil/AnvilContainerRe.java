@@ -190,9 +190,9 @@ public class AnvilContainerRe extends Container {
         this.worldPosCallable.consume((world, blockPos) -> {
             BlockState blockstate = world.getBlockState(blockPos);
             // 考虑到铁砧现在没有等级消耗，略微增加损耗速率是比较平衡的
-            // 下界合金砧的耐久在普通难度下为普通铁砧的 20 倍，平均能用 400 次
+            // 下界合金砧的耐久在普通难度下为铁砧的 25 倍，平均能用 500 次
             float[] ironChance = {0.75f, 1f, 1.25f, 1.75f};
-            float[] netheriteChance = {0f, 0f, 0.0625f, 0.1f};
+            float[] netheriteChance = {0f, 0.02f, 0.05f, 0.07f};
             float newBreakChance = baseBreakChance * ((blockstate.get(RegMain.blockStateMaterial) == 0) ? ironChance : netheriteChance)[world.getDifficulty().getId()];
             if (!player.abilities.isCreativeMode && blockstate.isIn(BlockTags.ANVIL) && player.getRNG().nextFloat() < newBreakChance) {
                 BlockState newBlockState = AnvilBlock.damage(blockstate);
@@ -201,6 +201,7 @@ public class AnvilContainerRe extends Container {
                     world.playEvent(1029, blockPos, 0);
                 } else {
                     // TODO : <验证> 铁砧损坏等级增加时的物品处理是否在多人工作正常
+                    // TODO : 让下界合金砧物品免疫岩浆等伤害
                     // 保存当前物品并清空物品栏，避免在更改方块时爆出
                     AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
                     ItemStack itemStack0 = tileEntity.getItems().get(0).copy();
