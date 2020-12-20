@@ -13,7 +13,6 @@ out
 *.iml
 .idea/workspace.xml
 .idea/*/
-!.idea/runConfigurations/
 
 # gradle
 build
