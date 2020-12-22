@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="runClient" type="Application" factoryName="Application" singleton="false">
     <envs>
-      <env name="MOD_CLASSES" value="blacksmithre%%$PROJECT_DIR$/src/main/resources:blacksmithre%%$PROJECT_DIR$/out/production/classes" />
+      <env name="MOD_CLASSES" value="blacksmithre%%$PROJECT_DIR$/src/main/resources;blacksmithre%%$PROJECT_DIR$/out/production/classes" />
       <env name="MCP_MAPPINGS" value="snapshot_20201028-1.16.3" />
       <env name="MCP_VERSION" value="20201025.185957" />
       <env name="FORGE_VERSION" value="34.1.42" />
@@ -13,8 +13,8 @@
       <env name="MC_VERSION" value="1.16.3" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="net.minecraftforge.userdev.LaunchTesting" />
-    <module name="BlacksmithRebirth_main" />
-    <option name="VM_PARAMETERS" value="-Dforge.logging.console.level=info -Dforge.logging.markers=SCAN,REGISTRIES,REGISTRYDUMP -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump -XstartOnFirstThread" />
+    <module name="Blacksmith_Reforged.main" />
+    <option name="VM_PARAMETERS" value="-Dforge.logging.console.level=info -Dforge.logging.markers=SCAN,REGISTRIES,REGISTRYDUMP -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
     <method v="2">
       <option name="Make" enabled="true" />
