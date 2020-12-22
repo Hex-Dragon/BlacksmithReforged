@@ -34,8 +34,6 @@ public class AnvilScreenRe extends ContainerScreen<AnvilContainerRe> {
         if ((this.container.getSlot(0).getHasStack() || this.container.getSlot(1).getHasStack()) && !this.container.getSlot(2).getHasStack()) {
             this.blit(matrixStack, i + 103, j + 26, this.xSize, 0, 28, 21);
         }
-        // TODO : 带有腐朽附魔的物品在满耐久的时候和原料一起放入铁砧允许修复，而不是打上红叉
-        // TODO : <验证> 检查使用 Main 获取 TileEntity 的方式是否会在多人造成兼容性问题
         // 渲染当前的 TileEntity
         ItemRendererRe.renderItemModelIntoGUIScaled(itemRenderer, new ItemStack(Main.LastTileEntity.getBlockState().getBlock()), i + 23, j + 20, 40);
     }

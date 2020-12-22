@@ -200,8 +200,6 @@ public class AnvilContainerRe extends Container {
                     world.removeBlock(blockPos, false);
                     world.playEvent(1029, blockPos, 0);
                 } else {
-                    // TODO : <验证> 铁砧损坏等级增加时的物品处理是否在多人工作正常
-                    // TODO : 让下界合金砧物品免疫岩浆等伤害
                     // 保存当前物品并清空物品栏，避免在更改方块时爆出
                     AnvilTileEntity tileEntity = (AnvilTileEntity) world.getTileEntity(blockPos);
                     ItemStack itemStack0 = tileEntity.getItems().get(0).copy();
@@ -215,7 +213,6 @@ public class AnvilContainerRe extends Container {
                     newTileEntity.inventory.set(1, itemStack1);
                     newTileEntity.markDirty();
                     // 让玩家再次打开 GUI
-                    // TODO : 想办法让玩家的鼠标在铁砧损坏时不会移动到中心（因为实际上 GUI 已经被关闭后重新打开了）；同时确认玩家手持的物品会不会因为 GUI 关闭变成掉落物
                     player.openContainer(newTileEntity.getBlockState().getContainer(world, blockPos));
                     world.playEvent(1030, blockPos, 0);
                 }
