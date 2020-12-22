@@ -32,8 +32,7 @@ displayName = "Blacksmith: Rebirth" #mandatory
 authors = "Hex Dragon" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description = '''
-by LTCat, 00ll00 and HerobrineXia
-'''
+by LTCat, 00ll00 and HerobrineXia'''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.blacksmithre]] #optional
 # the modid of the dependency
